@@ -1,0 +1,6 @@
+.cytoscape-container {
+    height: 80vh;
+    width: 100vw;
+    overflow-y: scroll;
+    border: 1px solid black;
+}

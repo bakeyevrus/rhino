@@ -4,6 +4,11 @@
   "private": true,
   "dependencies": {
     "cytoscape": "^3.2.11",
+    "cytoscape-context-menus": "^3.0.5",
+    "cytoscape-edgehandles": "^3.2.4",
+    "cytoscape-panzoom": "^2.5.2",
+    "jquery": "^3.3.1",
+    "random-name": "^0.1.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
