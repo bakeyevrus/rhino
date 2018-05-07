@@ -10,6 +10,7 @@ import contextMenus from 'cytoscape-context-menus';
 import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import edgehandles from 'cytoscape-edgehandles';
 import './cytoscapeComponent.css';
+import ElementTooltipContent from './ElementTooltipContent';
 
 panzoom(cytoscape);
 contextMenus(cytoscape, $);
@@ -20,13 +21,18 @@ const config = {
     {
       selector: 'node',
       css: {
+        shape: 'ellipse',
         content: 'data(name)',
       },
     },
     {
       selector: 'edge',
       css: {
+        'curve-style': 'bezier',
+        'target-arrow-color': '#ccc',
         'target-arrow-shape': 'triangle',
+        'target-endpoint': 'outside-to-line',
+        'arrow-scale': 1.5,
       },
     },
     // some style for the extension
@@ -129,8 +135,7 @@ class CytoscapeComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-    };
+    this.state = {};
 
     this.handleClick = this.handleClick.bind(this);
     this.handleExportButtonClick = this.handleExportButtonClick.bind(this);
@@ -144,7 +149,7 @@ class CytoscapeComponent extends React.Component {
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
     this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
-    cy.on('click', this.handleClick);
+    cy.on('click', 'node', this.handleClick);
     this.cy = cy;
   }
 
@@ -166,7 +171,7 @@ class CytoscapeComponent extends React.Component {
 
     const selectAll = () => {
       this.cy.elements('*').select();
-    }
+    };
 
     const menuOptions = {
       // List of initial menu items
@@ -198,7 +203,8 @@ class CytoscapeComponent extends React.Component {
           // Filters the elements to have this menu item on cxttap
           // If the selector is not truthy no elements will have this menu item on cxttap
           selector: 'node, edge',
-          onClickFunction: (event) => { // The function to be executed on click
+          onClickFunction: (event) => {
+            // The function to be executed on click
             this.removeElement(event.target);
           },
           disabled: false, // Whether the item will be created as disabled
@@ -283,66 +289,65 @@ class CytoscapeComponent extends React.Component {
       preview: true, // whether to show added edges preview before releasing selection
       hoverDelay: 150, // time spent hovering over a target node before it is considered selected
       handleNodes: 'node', // selector/filter function for whether edges can be made from a given node
-      handlePosition: function (node) {
+      handlePosition(node) {
         return 'middle top'; // sets the position of the handle in the format of "X-AXIS Y-AXIS" such as "left top", "middle top"
       },
       handleInDrawMode: false, // whether to show the handle in draw mode
-      edgeType: function (sourceNode, targetNode) {
+      edgeType(sourceNode, targetNode) {
         // can return 'flat' for flat edges between nodes or 'node' for intermediate node between them
         // returning null/undefined means an edge can't be added between the two nodes
         return 'flat';
       },
-      loopAllowed: function (node) {
+      loopAllowed(node) {
         // for the specified node, return whether edges from itself to itself are allowed
         return false;
       },
       nodeLoopOffset: -50, // offset for edgeType: 'node' loops
-      nodeParams: function (sourceNode, targetNode) {
+      nodeParams(sourceNode, targetNode) {
         // for edges between the specified source and target
         // return element object to be passed to cy.add() for intermediary node
         return {};
       },
-      edgeParams: function (sourceNode, targetNode, i) {
-
+      edgeParams(sourceNode, targetNode, i) {
         // for edges between the specified source and target
         // return element object to be passed to cy.add() for edge
         // NB: i indicates edge index in case of edgeType: 'node'
         return {};
       },
-      show: function (sourceNode) {
+      show(sourceNode) {
         // fired when handle is shown
       },
-      hide: function (sourceNode) {
+      hide(sourceNode) {
         // fired when the handle is hidden
       },
-      start: function (sourceNode) {
+      start(sourceNode) {
         // fired when edgehandles interaction starts (drag on handle)
       },
-      complete: function (sourceNode, targetNode, addedEles) {
+      complete(sourceNode, targetNode, addedEles) {
         // fired when edgehandles is done and elements are added
       },
-      stop: function (sourceNode) {
+      stop(sourceNode) {
         // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
       },
-      cancel: function (sourceNode, cancelledTargets) {
+      cancel(sourceNode, cancelledTargets) {
         // fired when edgehandles are cancelled (incomplete gesture)
       },
-      hoverover: function (sourceNode, targetNode) {
+      hoverover(sourceNode, targetNode) {
         // fired when a target is hovered
       },
-      hoverout: function (sourceNode, targetNode) {
+      hoverout(sourceNode, targetNode) {
         // fired when a target isn't hovered anymore
       },
-      previewon: function (sourceNode, targetNode, previewEles) {
+      previewon(sourceNode, targetNode, previewEles) {
         // fired when preview is shown
       },
-      previewoff: function (sourceNode, targetNode, previewEles) {
+      previewoff(sourceNode, targetNode, previewEles) {
         // fired when preview is hidden
       },
-      drawon: function () {
+      drawon() {
         // fired when draw mode enabled
       },
-      drawoff: function () {
+      drawoff() {
         // fired when draw mode disabled
       },
     };
@@ -351,18 +356,35 @@ class CytoscapeComponent extends React.Component {
   }
 
   handleClick(event) {
-    
+    const element = event.target;
+    if (element && element.isNode()) {
+      this.setState({ selectedNodeData: element.data() });
+    }
   }
 
   handleExportButtonClick() {
     console.log(this.cy.json());
   }
 
+  displayNodeData(jsonData) {
+    return Object.entries(jsonData).map(([key, value]) => (
+      <div key={`property-${key}`} className="properties-item">
+        {key}: {value}
+      </div>
+    ));
+  }
+
   render() {
+    const { selectedNodeData } = this.state;
     return (
       <React.Fragment>
-        <div className="cytoscape-container" ref={ref => this.editorContainer = ref} />
-        <button type="button" onClick={this.handleExportButtonClick}>Export as JSON</button>
+        <div className="cytoscape-container" ref={ref => (this.editorContainer = ref)} />
+        <button type="button" onClick={this.handleExportButtonClick}>
+          Export as JSON
+        </button>
+        {selectedNodeData && (
+          <div className="properties-container">{this.displayNodeData(selectedNodeData)}</div>
+        )}
       </React.Fragment>
     );
   }
