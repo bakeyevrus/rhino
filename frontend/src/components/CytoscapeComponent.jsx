@@ -140,6 +140,9 @@ class CytoscapeComponent extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.handleExportButtonClick = this.handleExportButtonClick.bind(this);
     this.removeElement = this.removeElement.bind(this);
+    this.handleCreateAttributeClick = this.handleCreateAttributeClick.bind(this);
+    this.handleAttributeChange = this.handleAttributeChange.bind(this);
+    this.handleDeleteAttributeClick = this.handleDeleteAttributeClick.bind(this);
   }
 
   componentDidMount() {
@@ -149,7 +152,7 @@ class CytoscapeComponent extends React.Component {
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
     this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
-    cy.on('click', 'node', this.handleClick);
+    cy.on('click', 'node, edge', this.handleClick);
     this.cy = cy;
   }
 
@@ -359,19 +362,34 @@ class CytoscapeComponent extends React.Component {
     const element = event.target;
     if (element && element.isNode()) {
       this.setState({ selectedNodeData: element.data() });
+    } else {
+      this.setState({ selectedNodeData: element.data() });
     }
+  }
+
+  handleAttributeChange(key, value) {
+    this.cy.getElementById(this.state.selectedNodeData.id).data(key, value);
+    this.setState(prevState =>
+      ({ selectedNodeData: { ...prevState.selectedNodeData, [key]: value } }));
+  }
+
+  handleDeleteAttributeClick(attributeName) {
+    const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
+    return () => {
+      selectedElement.removeData(attributeName);
+      this.setState({ selectedNodeData: selectedElement.data() });
+    };
+  }
+
+  handleCreateAttributeClick(name, value) {
+    const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
+    selectedElement.data(name, value);
+    this.setState(prevState =>
+      ({ selectedNodeData: { ...prevState.selectedNodeData, [name]: value } }));
   }
 
   handleExportButtonClick() {
     console.log(this.cy.json());
-  }
-
-  displayNodeData(jsonData) {
-    return Object.entries(jsonData).map(([key, value]) => (
-      <div key={`property-${key}`} className="properties-item">
-        {key}: {value}
-      </div>
-    ));
   }
 
   render() {
@@ -379,12 +397,17 @@ class CytoscapeComponent extends React.Component {
     return (
       <React.Fragment>
         <div className="cytoscape-container" ref={ref => (this.editorContainer = ref)} />
+        {selectedNodeData &&
+          <ElementTooltipContent
+            onAttributeChange={this.handleAttributeChange}
+            onDeleteAttributeClick={this.handleDeleteAttributeClick}
+            onCreateAttributeClick={this.handleCreateAttributeClick}
+            elementAttributes={selectedNodeData}
+          />
+        }
         <button type="button" onClick={this.handleExportButtonClick}>
           Export as JSON
         </button>
-        {selectedNodeData && (
-          <div className="properties-container">{this.displayNodeData(selectedNodeData)}</div>
-        )}
       </React.Fragment>
     );
   }
