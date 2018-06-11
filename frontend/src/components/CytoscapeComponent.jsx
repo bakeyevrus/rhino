@@ -369,8 +369,9 @@ class CytoscapeComponent extends React.Component {
 
   handleAttributeChange(key, value) {
     this.cy.getElementById(this.state.selectedNodeData.id).data(key, value);
-    this.setState(prevState =>
-      ({ selectedNodeData: { ...prevState.selectedNodeData, [key]: value } }));
+    this.setState(prevState => ({
+      selectedNodeData: { ...prevState.selectedNodeData, [key]: value },
+    }));
   }
 
   handleDeleteAttributeClick(attributeName) {
@@ -384,8 +385,9 @@ class CytoscapeComponent extends React.Component {
   handleCreateAttributeClick(name, value) {
     const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
     selectedElement.data(name, value);
-    this.setState(prevState =>
-      ({ selectedNodeData: { ...prevState.selectedNodeData, [name]: value } }));
+    this.setState(prevState => ({
+      selectedNodeData: { ...prevState.selectedNodeData, [name]: value },
+    }));
   }
 
   handleExportButtonClick() {
@@ -396,18 +398,25 @@ class CytoscapeComponent extends React.Component {
     const { selectedNodeData } = this.state;
     return (
       <React.Fragment>
-        <div className="cytoscape-container" ref={ref => (this.editorContainer = ref)} />
-        {selectedNodeData &&
-          <ElementTooltipContent
-            onAttributeChange={this.handleAttributeChange}
-            onDeleteAttributeClick={this.handleDeleteAttributeClick}
-            onCreateAttributeClick={this.handleCreateAttributeClick}
-            elementAttributes={selectedNodeData}
-          />
-        }
-        <button type="button" onClick={this.handleExportButtonClick}>
-          Export as JSON
-        </button>
+        <div className="container-fluid">
+          <div className="row">
+            <div
+              className="cytoscape-container col-xs-12"
+              ref={ref => (this.editorContainer = ref)}
+            />
+            {selectedNodeData && (
+              <ElementTooltipContent
+                onAttributeChange={this.handleAttributeChange}
+                onDeleteAttributeClick={this.handleDeleteAttributeClick}
+                onCreateAttributeClick={this.handleCreateAttributeClick}
+                elementAttributes={selectedNodeData}
+              />
+            )}
+            <button type="button" onClick={this.handleExportButtonClick}>
+              Export as JSON
+            </button>
+          </div>
+        </div>
       </React.Fragment>
     );
   }

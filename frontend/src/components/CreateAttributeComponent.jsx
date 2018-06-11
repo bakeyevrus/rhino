@@ -61,7 +61,11 @@ class CreateAttributeComponent extends React.Component {
     if (!isOpen) {
       return (
         <div className="mx-auto">
-          <button type="button" className="btn btn-outline-primary mx-auto" onClick={this.handleFormOpen}>
+          <button
+            type="button"
+            className="btn btn-outline-primary mx-auto"
+            onClick={this.handleFormOpen}
+          >
             New
           </button>
         </div>
@@ -73,11 +77,30 @@ class CreateAttributeComponent extends React.Component {
           <div className="input-group-prepend">
             <span className="input-group-text">Key and value</span>
           </div>
-          <input type="text" className="form-control" name="key" placeholder="Attribute key" value={key} onChange={this.handleFormChange} />
-          <input type="text" className="form-control" name="value" placeholder="Attribute value" value={value} onChange={this.handleFormChange} />
+          <input
+            type="text"
+            className="form-control"
+            name="key"
+            placeholder="Attribute key"
+            value={key}
+            onChange={this.handleFormChange}
+          />
+          <input
+            type="text"
+            className="form-control"
+            name="value"
+            placeholder="Attribute value"
+            value={value}
+            onChange={this.handleFormChange}
+          />
         </div>
         <div className="ml-2 mb-2">
-          <button type="button" className="btn btn-primary mr-2" onClick={this.handleSaveClick} disabled={!this.validate()}>
+          <button
+            type="button"
+            className="btn btn-primary mr-2"
+            onClick={this.handleSaveClick}
+            disabled={!this.validate()}
+          >
             Save
           </button>
           <button type="button" className="btn btn-danger" onClick={this.handleCancelClick}>
