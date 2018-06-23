@@ -11,6 +11,7 @@ import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import edgehandles from 'cytoscape-edgehandles';
 import './cytoscapeComponent.css';
 import ElementTooltipContent from './ElementTooltipContent';
+import elementsMock from '../model/MockData';
 
 panzoom(cytoscape);
 contextMenus(cytoscape, $);
@@ -78,25 +79,7 @@ const config = {
       },
     },
   ],
-  elements: {
-    nodes: [
-      { data: { id: 'j', name: 'Jerry' } },
-      { data: { id: 'e', name: 'Elaine' } },
-      { data: { id: 'k', name: 'Kramer' } },
-      { data: { id: 'g', name: 'George' } },
-    ],
-    edges: [
-      { data: { source: 'j', target: 'e' } },
-      { data: { source: 'j', target: 'k' } },
-      { data: { source: 'j', target: 'g' } },
-      { data: { source: 'e', target: 'j' } },
-      { data: { source: 'e', target: 'k' } },
-      { data: { source: 'k', target: 'j' } },
-      { data: { source: 'k', target: 'e' } },
-      { data: { source: 'k', target: 'g' } },
-      { data: { source: 'g', target: 'j' } },
-    ],
-  },
+  elements: elementsMock,
   layout: {
     name: 'grid',
     rows: 1,
@@ -154,6 +137,18 @@ class CytoscapeComponent extends React.Component {
     this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
     cy.on('click', 'node, edge', this.handleClick);
     this.cy = cy;
+    this.counter = this.calculateLastId();
+  }
+
+  calculateLastId() {
+    const lastIdStr = this.cy.nodes().max(element => element.id()).value;
+    return parseInt(lastIdStr, 10) + 1;
+  }
+
+  getNextId() {
+    const nextId = this.counter;
+    this.counter = nextId + 1;
+    return nextId;
   }
 
   componentWillUnmount() {
@@ -274,18 +269,6 @@ class CytoscapeComponent extends React.Component {
     return menuOptions;
   }
 
-  createNode(x, y) {
-    this.cy.add({
-      group: 'nodes',
-      data: { name: random() },
-      position: { x, y },
-    });
-  }
-
-  removeElement(element) {
-    this.cy.remove(element);
-  }
-
   getEdgehanadlesConfig() {
     // the default values of each option are outlined below:
     const defaults = {
@@ -315,7 +298,15 @@ class CytoscapeComponent extends React.Component {
         // for edges between the specified source and target
         // return element object to be passed to cy.add() for edge
         // NB: i indicates edge index in case of edgeType: 'node'
-        return {};
+        return {
+          group: 'edges',
+          data: {
+            id: `${sourceNode.id()}_${targetNode.id()}`,
+            source: sourceNode.id(),
+            target: targetNode.id(),
+            priority: 'Low',
+          },
+        };
       },
       show(sourceNode) {
         // fired when handle is shown
@@ -356,6 +347,22 @@ class CytoscapeComponent extends React.Component {
     };
 
     return defaults;
+  }
+
+  createNode(x, y) {
+    this.cy.add({
+      group: 'nodes',
+      data: {
+        id: this.getNextId(),
+        name: random(),
+        priority: 'Medium',
+      },
+      position: { x, y },
+    });
+  }
+
+  removeElement(element) {
+    this.cy.remove(element);
   }
 
   handleClick(event) {

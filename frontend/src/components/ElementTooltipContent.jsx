@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import CreateAttributeComponent from './CreateAttributeComponent';
 import './elementTooltipContent.css';
 
+const PRIORITY_FORM_OPTIONS = ['Low', 'Medium', 'High'];
+
 function ElementTooltipContent({
   elementAttributes,
   onAttributeChange,
@@ -13,12 +15,79 @@ function ElementTooltipContent({
     const newValue = event.target.value;
     onAttributeChange(key, newValue);
   };
+  const {
+    id, priority, source, target, ...customAttributes
+  } = elementAttributes;
 
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="attributes-container">
-          {Object.entries(elementAttributes)
+          {/* ID attribute form */}
+          <div className="input-group mb-2">
+            <div className="input-group-prepend">
+              <span className="input-group-text" id="basic-addon1">
+                ID
+              </span>
+            </div>
+            <input readOnly type="text" className="form-control" name="id-form" value={id} />
+          </div>
+          {/* Source attribute form */}
+          {source && (
+            <div className="input-group mb-2">
+              <div className="input-group-prepend">
+                <span className="input-group-text" id="basic-addon1">
+                  Source
+                </span>
+              </div>
+              <input
+                readOnly
+                type="text"
+                className="form-control"
+                name="source-form"
+                value={source}
+              />
+            </div>
+          )}
+          {/* Target attribute form */}
+          {target && (
+            <div className="input-group mb-2">
+              <div className="input-group-prepend">
+                <span className="input-group-text" id="basic-addon1">
+                  Target
+                </span>
+              </div>
+              <input
+                readOnly
+                type="text"
+                className="form-control"
+                name="target-form"
+                value={target}
+              />
+            </div>
+          )}
+          {/* Priority attribute form */}
+          <div className="input-group mb-2">
+            <div className="input-group-prepend">
+              <span className="input-group-text" id="basic-addon1">
+                Priority
+              </span>
+            </div>
+            <select
+              name="priority-form"
+              value={priority}
+              className="custom-select"
+              onChange={handleFormChange('priority')}
+            >
+              {PRIORITY_FORM_OPTIONS.map(option => (
+                <option key={`option-${option}`} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {Object.entries(customAttributes)
             // Get the second attribute from array and check if not null
             .filter(([, value]) => value != null)
             .map(([key, value]) => (
@@ -33,26 +102,26 @@ function ElementTooltipContent({
                 <input
                   type="text"
                   className="form-control"
-                  name="value-form"
+                  name={`${key}-form`}
                   value={value}
-                  readOnly={key === 'id'}
                   onChange={handleFormChange(key)}
                 />
-                {key !== 'id' && (
-                  <div className="input-group-append ml-1">
-                    <button
-                      type="button"
-                      className="close"
-                      aria-label="Close"
-                      onClick={onDeleteAttributeClick(key)}
-                    >
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                )}
+                <div className="input-group-append ml-1">
+                  <button
+                    type="button"
+                    className="close"
+                    aria-label="Close"
+                    onClick={onDeleteAttributeClick(key)}
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
               </div>
             ))}
-          <CreateAttributeComponent onSaveClick={onCreateAttributeClick} />
+          <CreateAttributeComponent
+            selectedOptions={Object.keys(customAttributes)}
+            onSaveClick={onCreateAttributeClick}
+          />
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// TODO: add validation logic
+const KEY_FORM_OPTIONS = ['Weight', 'Probability', 'Radius'];
+
 class CreateAttributeComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -58,6 +59,10 @@ class CreateAttributeComponent extends React.Component {
 
   render() {
     const { isOpen, key, value } = this.state;
+    const { selectedOptions } = this.props;
+
+    const filteredKeyFormOptions = KEY_FORM_OPTIONS.filter(option => !selectedOptions.includes(option));
+
     if (!isOpen) {
       return (
         <div className="mx-auto">
@@ -77,14 +82,16 @@ class CreateAttributeComponent extends React.Component {
           <div className="input-group-prepend">
             <span className="input-group-text">Key and value</span>
           </div>
-          <input
-            type="text"
-            className="form-control"
-            name="key"
-            placeholder="Attribute key"
-            value={key}
-            onChange={this.handleFormChange}
-          />
+          <select name="key" value={key} onChange={this.handleFormChange} className="custom-select">
+            {/* Set value as empty string explicitely to force user select another option,
+            otherwise validate() function won't be passed */}
+            <option value="">Select key</option>
+            {filteredKeyFormOptions.map(option => (
+              <option key={`option-${option}`} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             className="form-control"
@@ -113,6 +120,7 @@ class CreateAttributeComponent extends React.Component {
 }
 
 CreateAttributeComponent.propTypes = {
+  selectedOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
   onSaveClick: PropTypes.func.isRequired,
 };
 
