@@ -3,7 +3,7 @@ const elements = {
     { data: { id: '1', name: 'Jerry', priority: 'Low' } },
     { data: { id: '2', name: 'Elaine', priority: 'Medium' } },
     { data: { id: '3', name: 'Kramer', priority: 'High' } },
-    { data: { id: '4', name: 'George', priority: 'Low' } },
+    { data: { id: '4', name: 'George', priority: 'Low' } }
   ],
   edges: [
     { data: { source: '1', target: '2', priority: 'Low' } },
@@ -14,8 +14,8 @@ const elements = {
     { data: { source: '3', target: '1', priority: 'Low' } },
     { data: { source: '3', target: '2', priority: 'Medium' } },
     { data: { source: '3', target: '4', priority: 'High' } },
-    { data: { source: '4', target: '1', priority: 'Low' } },
-  ],
+    { data: { source: '4', target: '1', priority: 'Low' } }
+  ]
 };
 
 export default elements;

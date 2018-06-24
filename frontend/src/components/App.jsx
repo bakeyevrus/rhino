@@ -1,6 +1,6 @@
 import React from 'react';
-import CytoscapeComponent from './components/CytoscapeComponent';
-import Toolbar from './components/Toolbar';
+import CytoscapeComponent from './CytoscapeComponent';
+import Toolbar from './Toolbar';
 
 function App() {
   return (
