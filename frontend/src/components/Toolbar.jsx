@@ -1,4 +1,5 @@
 import React from 'react';
+import ProjectTabsContainer from '../containers/ProjectTabsContainer';
 
 function Toolbar() {
   return (
@@ -19,10 +20,7 @@ function Toolbar() {
       </button>
 
       <div className="collapse navbar-collapse" id="navbar">
-        <div className="w-100 d-flex flex-row justify-content-between mx-2 ">
-          <span className="navbar-text">Current project: unnamed</span>
-          <span className="navbar-text ">Status: SAVED</span>
-        </div>
+        <ProjectTabsContainer />
       </div>
     </nav>
   );
