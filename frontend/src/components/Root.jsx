@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import App from './App';
 import { rootReducer } from '../reducers/reducers';
-import { project1, project2 } from '../mocks/MockData';
+import { project1 } from '../mocks/MockData';
 
 const initialState = {
   activeProjectId: '1ff-2xx',
@@ -12,11 +12,6 @@ const initialState = {
       id: '1ff-2xx',
       name: 'Test project #1',
       elements: project1
-    },
-    {
-      id: '1ff-2xy',
-      name: 'Test project #2',
-      elements: project2
     }
   ]
 };

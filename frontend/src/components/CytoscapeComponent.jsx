@@ -17,7 +17,7 @@ panzoom(cytoscape);
 contextMenus(cytoscape, $);
 cytoscape.use(edgehandles);
 
-const getCyConfig = (container, data) => {
+const getCyConfig = (data, container) => {
   const config = {
     style: [
       {
@@ -89,9 +89,7 @@ const getCyConfig = (container, data) => {
   return {
     ...config,
     container,
-    elements: {
-      ...data
-    }
+    elements: [...data]
   };
 };
 
@@ -139,12 +137,12 @@ class CytoscapeComponent extends React.Component {
 
   componentDidMount() {
     const { graph } = this.props;
-    this.initialize(this.editorContainer, graph);
+    this.initialize(graph, this.editorContainer);
   }
 
   componentDidUpdate() {
     const { graph } = this.props;
-    this.initialize(this.editorContainer, graph);
+    this.initialize(graph, this.editorContainer);
   }
 
   calculateLastId() {

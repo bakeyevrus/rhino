@@ -12,7 +12,7 @@ export const projects = (state = [], action) => {
         {
           id: action.id,
           name: action.name,
-          elements: {}
+          elements: []
         }
       ];
     case 'REMOVE_PROJECT':
