@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import $ from 'jquery';
 import random from 'random-name';
 import cytoscape from 'cytoscape';
@@ -16,91 +17,82 @@ panzoom(cytoscape);
 contextMenus(cytoscape, $);
 cytoscape.use(edgehandles);
 
-const config = {
-  style: [
-    {
-      selector: 'node',
-      css: {
-        shape: 'ellipse',
-        content: 'data(name)',
+const getCyConfig = (container, data) => {
+  const config = {
+    style: [
+      {
+        selector: 'node',
+        css: {
+          shape: 'ellipse',
+          content: 'data(name)'
+        }
       },
-    },
-    {
-      selector: 'edge',
-      css: {
-        'curve-style': 'bezier',
-        'target-arrow-color': '#ccc',
-        'target-arrow-shape': 'triangle',
-        'target-endpoint': 'outside-to-line',
-        'arrow-scale': 1.5,
+      {
+        selector: 'edge',
+        css: {
+          'curve-style': 'bezier',
+          'target-arrow-color': '#ccc',
+          'target-arrow-shape': 'triangle',
+          'target-endpoint': 'outside-to-line',
+          'arrow-scale': 1.5
+        }
       },
-    },
-    // some style for the extension
-    {
-      selector: '.eh-handle',
-      style: {
-        'background-color': 'red',
-        width: 12,
-        height: 12,
-        shape: 'ellipse',
-        'overlay-opacity': 0,
-        'border-width': 12, // makes the handle easier to hit
-        'border-opacity': 0,
+      // some style for the extension
+      {
+        selector: '.eh-handle',
+        style: {
+          'background-color': 'red',
+          width: 12,
+          height: 12,
+          shape: 'ellipse',
+          'overlay-opacity': 0,
+          'border-width': 12, // makes the handle easier to hit
+          'border-opacity': 0
+        }
       },
-    },
-    {
-      selector: '.eh-hover',
-      style: {
-        'background-color': 'red',
+      {
+        selector: '.eh-hover',
+        style: {
+          'background-color': 'red'
+        }
       },
-    },
-    {
-      selector: '.eh-source',
-      style: {
-        'border-width': 2,
-        'border-color': 'red',
+      {
+        selector: '.eh-source',
+        style: {
+          'border-width': 2,
+          'border-color': 'red'
+        }
       },
-    },
-    {
-      selector: '.eh-target',
-      style: {
-        'border-width': 2,
-        'border-color': 'red',
+      {
+        selector: '.eh-target',
+        style: {
+          'border-width': 2,
+          'border-color': 'red'
+        }
       },
-    },
-    {
-      selector: '.eh-preview, .eh-ghost-edge',
-      style: {
-        'background-color': 'red',
-        'line-color': 'red',
-        'target-arrow-color': 'red',
-        'source-arrow-color': 'red',
-      },
-    },
-  ],
-  elements: {
-    nodes: [
-      { data: { id: 'j', name: 'Jerry' } },
-      { data: { id: 'e', name: 'Elaine' } },
-      { data: { id: 'k', name: 'Kramer' } },
-      { data: { id: 'g', name: 'George' } },
+      {
+        selector: '.eh-preview, .eh-ghost-edge',
+        style: {
+          'background-color': 'red',
+          'line-color': 'red',
+          'target-arrow-color': 'red',
+          'source-arrow-color': 'red'
+        }
+      }
     ],
-    edges: [
-      { data: { source: 'j', target: 'e' } },
-      { data: { source: 'j', target: 'k' } },
-      { data: { source: 'j', target: 'g' } },
-      { data: { source: 'e', target: 'j' } },
-      { data: { source: 'e', target: 'k' } },
-      { data: { source: 'k', target: 'j' } },
-      { data: { source: 'k', target: 'e' } },
-      { data: { source: 'k', target: 'g' } },
-      { data: { source: 'g', target: 'j' } },
-    ],
-  },
-  layout: {
-    name: 'grid',
-    rows: 1,
-  },
+    layout: {
+      name: 'grid',
+      rows: 1
+    }
+  };
+
+  return {
+    ...config,
+    container,
+    elements: {
+      ...data
+    }
+  };
 };
 
 const zoomDefaults = {
@@ -128,7 +120,7 @@ const zoomDefaults = {
   sliderHandleIcon: 'fa fa-minus',
   zoomInIcon: 'fa fa-plus',
   zoomOutIcon: 'fa fa-minus',
-  resetIcon: 'fa fa-expand',
+  resetIcon: 'fa fa-expand'
 };
 
 class CytoscapeComponent extends React.Component {
@@ -146,14 +138,24 @@ class CytoscapeComponent extends React.Component {
   }
 
   componentDidMount() {
-    config.container = this.editorContainer;
+    const { graph } = this.props;
+    this.initialize(this.editorContainer, graph);
+  }
 
-    const cy = cytoscape(config);
-    this.panzoom = cy.panzoom(zoomDefaults);
-    this.menu = cy.contextMenus(this.getContextMenuConfig());
-    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
-    cy.on('click', 'node, edge', this.handleClick);
-    this.cy = cy;
+  componentDidUpdate() {
+    const { graph } = this.props;
+    this.initialize(this.editorContainer, graph);
+  }
+
+  calculateLastId() {
+    const lastIdStr = this.cy.nodes().max(element => element.id()).value;
+    return parseInt(lastIdStr, 10) + 1;
+  }
+
+  getNextId() {
+    const nextId = this.counter;
+    this.counter = nextId + 1;
+    return nextId;
   }
 
   componentWillUnmount() {
@@ -190,7 +192,7 @@ class CytoscapeComponent extends React.Component {
           onClickFunction: (event) => {
             this.createNode(event.position.x, event.position.y);
           },
-          hasTrailingDivider: true,
+          hasTrailingDivider: true
         },
         {
           id: 'remove', // ID of menu item
@@ -213,7 +215,7 @@ class CytoscapeComponent extends React.Component {
           disabled: false, // Whether the item will be created as disabled
           show: true, // Whether the item will be shown or not
           hasTrailingDivider: true, // Whether the item will have a trailing divider
-          coreAsWell: false, // Whether core instance have this item on cxttap
+          coreAsWell: false // Whether core instance have this item on cxttap
         },
         {
           id: 'remove-all-selected',
@@ -225,7 +227,7 @@ class CytoscapeComponent extends React.Component {
           disabled: false,
           show: true,
           hasTrailingDivider: false,
-          coreAsWell: true,
+          coreAsWell: true
         },
         {
           id: 'select-all',
@@ -236,7 +238,7 @@ class CytoscapeComponent extends React.Component {
           },
           hasTrailingDivider: false,
           show: true,
-          coreAsWell: true,
+          coreAsWell: true
         },
         {
           id: 'select-all-nodes',
@@ -247,7 +249,7 @@ class CytoscapeComponent extends React.Component {
           },
           hasTrailingDivider: false,
           show: true,
-          coreAsWell: true,
+          coreAsWell: true
         },
         {
           id: 'select-all-edges',
@@ -258,8 +260,8 @@ class CytoscapeComponent extends React.Component {
           },
           hasTrailingDivider: true,
           show: true,
-          coreAsWell: true,
-        },
+          coreAsWell: true
+        }
       ],
       // css classes that menu items will have
       menuItemClasses: [
@@ -268,22 +270,10 @@ class CytoscapeComponent extends React.Component {
       // css classes that context menu will have
       contextMenuClasses: [
         // add class names to this list
-      ],
+      ]
     };
 
     return menuOptions;
-  }
-
-  createNode(x, y) {
-    this.cy.add({
-      group: 'nodes',
-      data: { name: random() },
-      position: { x, y },
-    });
-  }
-
-  removeElement(element) {
-    this.cy.remove(element);
   }
 
   getEdgehanadlesConfig() {
@@ -315,7 +305,15 @@ class CytoscapeComponent extends React.Component {
         // for edges between the specified source and target
         // return element object to be passed to cy.add() for edge
         // NB: i indicates edge index in case of edgeType: 'node'
-        return {};
+        return {
+          group: 'edges',
+          data: {
+            id: `${sourceNode.id()}_${targetNode.id()}`,
+            source: sourceNode.id(),
+            target: targetNode.id(),
+            priority: 'Low'
+          }
+        };
       },
       show(sourceNode) {
         // fired when handle is shown
@@ -352,10 +350,37 @@ class CytoscapeComponent extends React.Component {
       },
       drawoff() {
         // fired when draw mode disabled
-      },
+      }
     };
 
     return defaults;
+  }
+
+  initialize(graph, container) {
+    const cyConfig = getCyConfig(graph, container);
+    const cy = cytoscape(cyConfig);
+    this.panzoom = cy.panzoom(zoomDefaults);
+    this.menu = cy.contextMenus(this.getContextMenuConfig());
+    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
+    cy.on('click', 'node, edge', this.handleClick);
+    this.cy = cy;
+    this.counter = this.calculateLastId();
+  }
+
+  createNode(x, y) {
+    this.cy.add({
+      group: 'nodes',
+      data: {
+        id: this.getNextId(),
+        name: random(),
+        priority: 'Medium'
+      },
+      position: { x, y }
+    });
+  }
+
+  removeElement(element) {
+    this.cy.remove(element);
   }
 
   handleClick(event) {
@@ -369,8 +394,9 @@ class CytoscapeComponent extends React.Component {
 
   handleAttributeChange(key, value) {
     this.cy.getElementById(this.state.selectedNodeData.id).data(key, value);
-    this.setState(prevState =>
-      ({ selectedNodeData: { ...prevState.selectedNodeData, [key]: value } }));
+    this.setState(prevState => ({
+      selectedNodeData: { ...prevState.selectedNodeData, [key]: value }
+    }));
   }
 
   handleDeleteAttributeClick(attributeName) {
@@ -384,33 +410,67 @@ class CytoscapeComponent extends React.Component {
   handleCreateAttributeClick(name, value) {
     const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
     selectedElement.data(name, value);
-    this.setState(prevState =>
-      ({ selectedNodeData: { ...prevState.selectedNodeData, [name]: value } }));
+    this.setState(prevState => ({
+      selectedNodeData: { ...prevState.selectedNodeData, [name]: value }
+    }));
   }
 
   handleExportButtonClick() {
     console.log(this.cy.json());
   }
 
+  handleProjectSave() {
+    const { projectId, onProjectSave } = this.props;
+    const graph = this.cy;
+    console.log(graph);
+  }
+
   render() {
     const { selectedNodeData } = this.state;
     return (
       <React.Fragment>
-        <div className="cytoscape-container" ref={ref => (this.editorContainer = ref)} />
-        {selectedNodeData &&
-          <ElementTooltipContent
-            onAttributeChange={this.handleAttributeChange}
-            onDeleteAttributeClick={this.handleDeleteAttributeClick}
-            onCreateAttributeClick={this.handleCreateAttributeClick}
-            elementAttributes={selectedNodeData}
-          />
-        }
-        <button type="button" onClick={this.handleExportButtonClick}>
-          Export as JSON
-        </button>
+        <div className="container-fluid">
+          <div className="row">
+            <div
+              className="cytoscape-container col-xs-12"
+              ref={ref => (this.editorContainer = ref)}
+            />
+            {selectedNodeData && (
+              <ElementTooltipContent
+                onAttributeChange={this.handleAttributeChange}
+                onDeleteAttributeClick={this.handleDeleteAttributeClick}
+                onCreateAttributeClick={this.handleCreateAttributeClick}
+                elementAttributes={selectedNodeData}
+              />
+            )}
+            <button type="button" onClick={this.handleExportButtonClick}>
+              Export as JSON
+            </button>
+          </div>
+        </div>
       </React.Fragment>
     );
   }
 }
+
+CytoscapeComponent.propTypes = {
+  graph: PropTypes.shape({
+    nodes: PropTypes.arrayOf(PropTypes.shape({
+      data: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        priority: PropTypes.string.isRequired,
+        name: PropTypes.string
+      })
+    })),
+    edges: PropTypes.arrayOf(PropTypes.shape({
+      data: PropTypes.shape({
+        source: PropTypes.string.isRequired,
+        target: PropTypes.string.isRequired,
+        priority: PropTypes.string.isRequired
+      })
+    }))
+  }).isRequired,
+  projectId: PropTypes.string.isRequired
+};
 
 export default CytoscapeComponent;

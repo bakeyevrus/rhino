@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
-import App from './App';
+import Root from './components/Root';
 import registerServiceWorker from './registerServiceWorker';
 
-
-ReactDOM.render(<App />, document.getElementById('root'));
+/* eslint-disable */
+ReactDOM.render(<Root />, document.getElementById('root'));
 registerServiceWorker();

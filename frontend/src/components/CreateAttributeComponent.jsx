@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// TODO: add validation logic
+const KEY_FORM_OPTIONS = ['Weight', 'Probability', 'Radius'];
+
 class CreateAttributeComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -9,7 +10,7 @@ class CreateAttributeComponent extends React.Component {
     this.state = {
       isOpen: false,
       key: '',
-      value: '',
+      value: ''
     };
 
     this.handleFormOpen = this.handleFormOpen.bind(this);
@@ -48,7 +49,7 @@ class CreateAttributeComponent extends React.Component {
   resetState() {
     this.setState({
       key: '',
-      value: '',
+      value: ''
     });
   }
 
@@ -58,10 +59,18 @@ class CreateAttributeComponent extends React.Component {
 
   render() {
     const { isOpen, key, value } = this.state;
+    const { selectedOptions } = this.props;
+
+    const filteredKeyFormOptions = KEY_FORM_OPTIONS.filter(option => !selectedOptions.includes(option));
+
     if (!isOpen) {
       return (
         <div className="mx-auto">
-          <button type="button" className="btn btn-outline-primary mx-auto" onClick={this.handleFormOpen}>
+          <button
+            type="button"
+            className="btn btn-outline-primary mx-auto"
+            onClick={this.handleFormOpen}
+          >
             New
           </button>
         </div>
@@ -73,11 +82,32 @@ class CreateAttributeComponent extends React.Component {
           <div className="input-group-prepend">
             <span className="input-group-text">Key and value</span>
           </div>
-          <input type="text" className="form-control" name="key" placeholder="Attribute key" value={key} onChange={this.handleFormChange} />
-          <input type="text" className="form-control" name="value" placeholder="Attribute value" value={value} onChange={this.handleFormChange} />
+          <select name="key" value={key} onChange={this.handleFormChange} className="custom-select">
+            {/* Set value as empty string explicitely to force user select another option,
+            otherwise validate() function won't be passed */}
+            <option value="">Select key</option>
+            {filteredKeyFormOptions.map(option => (
+              <option key={`option-${option}`} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            className="form-control"
+            name="value"
+            placeholder="Attribute value"
+            value={value}
+            onChange={this.handleFormChange}
+          />
         </div>
         <div className="ml-2 mb-2">
-          <button type="button" className="btn btn-primary mr-2" onClick={this.handleSaveClick} disabled={!this.validate()}>
+          <button
+            type="button"
+            className="btn btn-primary mr-2"
+            onClick={this.handleSaveClick}
+            disabled={!this.validate()}
+          >
             Save
           </button>
           <button type="button" className="btn btn-danger" onClick={this.handleCancelClick}>
@@ -90,7 +120,8 @@ class CreateAttributeComponent extends React.Component {
 }
 
 CreateAttributeComponent.propTypes = {
-  onSaveClick: PropTypes.func.isRequired,
+  selectedOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onSaveClick: PropTypes.func.isRequired
 };
 
 export default CreateAttributeComponent;
