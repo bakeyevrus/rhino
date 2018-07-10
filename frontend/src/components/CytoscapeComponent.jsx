@@ -419,6 +419,12 @@ class CytoscapeComponent extends React.Component {
     console.log(this.cy.json());
   }
 
+  handleProjectSave() {
+    const { projectId, onProjectSave } = this.props;
+    const graph = this.cy;
+    console.log(graph);
+  }
+
   render() {
     const { selectedNodeData } = this.state;
     return (

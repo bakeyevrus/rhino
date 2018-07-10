@@ -10,8 +10,8 @@ function App(props) {
   const myRef = React.createRef();
 
   const onProjectSwitch = (targetProjectId) => {
-    console.log(myRef.current);
     dispatch(switchProject(targetProjectId));
+    myRef.current.handleProjectSave();
   };
 
   return (
