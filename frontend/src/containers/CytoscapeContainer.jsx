@@ -1,15 +1,34 @@
 import React, { forwardRef } from 'react';
-// import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { saveProject } from '../actions/actions';
 import CytoscapeComponent from '../components/CytoscapeComponent';
 
+/**
+ * This class is not using react-redux, because React ref forwarding
+ * is not supported yet (7/10/2018). This is the main reason why this class
+ * is written with pure Redux
+ */
 class CytoscapeContainer extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleProjectSave = this.handleProjectSave.bind(this);
+  }
+
   componentDidMount() {
-    this.unsubscribe = this.context.store.subscribe(() => this.forceUpdate());
+    const { store } = this.context;
+
+    this.unsubscribe = store.subscribe(() => this.forceUpdate());
   }
 
   componentWillUnmount() {
     this.unsubscribe();
+  }
+
+  handleProjectSave(projectId, graph) {
+    const { store } = this.context;
+
+    store.dispatch(saveProject(projectId, graph));
   }
 
   render() {
@@ -18,10 +37,15 @@ class CytoscapeContainer extends React.Component {
     const state = store.getState();
     const { activeProjectId, projects } = state;
     const activeProject = projects.find(project => project.id === activeProjectId);
+    const graph =
+      activeProject.elements.nodes || activeProject.elements.edges
+        ? [...activeProject.elements.nodes, ...activeProject.elements.edges]
+        : [];
+    // console.log(activeProject.elements);
     return (
       <CytoscapeComponent
         projectId={activeProject.id}
-        graph={activeProject.elements}
+        graph={graph}
         onProjectSave={this.handleProjectSave}
         ref={forwardedRef}
       />
@@ -37,26 +61,4 @@ CytoscapeContainer.contextTypes = {
   store: PropTypes.object
 };
 
-// const findActiveProject = (targetProjectId, projects) =>
-//   projects.find(project => project.id === targetProjectId);
-
-// const mapStateToProps = (state) => {
-//   const activeProject = findActiveProject(state.activeProjectId, state.projects);
-
-//   return {
-//     projectId: activeProject.id,
-//     graph: activeProject.elements
-//   };
-// };
-
-// const mapDispatchToProps = dispatch => ({
-//   onProjectSave: (projectId, graph) => dispatch(saveProject(projectId, graph))
-// });
-
-// const ConnectedCytoscapeContainer = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(CytoscapeComponent);
-
-// export default forwardRef((props, ref) => <ConnectedCytoscapeContainer {...props} ref={ref} />);
 export default forwardRef((props, ref) => <CytoscapeContainer {...props} forwardedRef={ref} />);
