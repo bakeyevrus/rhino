@@ -1,14 +1,29 @@
 import React from 'react';
-import CytoscapeComponent from './CytoscapeComponent';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { saveProject, switchProject } from '../actions/actions';
+import CytoscapeContainer from '../containers/CytoscapeContainer';
 import Toolbar from './Toolbar';
 
-function App() {
+function App(props) {
+  const { dispatch } = props;
+  const myRef = React.createRef();
+
+  const onProjectSwitch = (targetProjectId) => {
+    console.log(myRef.current);
+    dispatch(switchProject(targetProjectId));
+  };
+
   return (
     <React.Fragment>
-      <Toolbar />
-      <CytoscapeComponent />
+      <Toolbar onProjectSwitch={onProjectSwitch} />
+      <CytoscapeContainer ref={myRef} />
     </React.Fragment>
   );
 }
 
-export default App;
+App.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
+
+export default connect()(App);

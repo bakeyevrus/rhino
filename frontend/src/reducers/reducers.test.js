@@ -54,4 +54,40 @@ describe('reducers', () => {
 
     expect(activeProjectId(stateBefore, action)).toEqual(stateAfter);
   });
+
+  it('should handle SAVE_PROJECT', () => {
+    const stateBefore = [
+      {
+        id: 1,
+        name: 'Test project',
+        elements: {
+          nodes: {
+            data: { id: '2', name: 'Ron', priority: 'High' }
+          }
+        }
+      }
+    ];
+    const action = {
+      type: 'SAVE_PROJECT',
+      id: 1,
+      elements: {
+        nodes: {
+          data: { id: '1', name: 'Jerry', priority: 'Low' }
+        }
+      }
+    };
+    const stateAfter = [
+      {
+        id: 1,
+        name: 'Test project',
+        elements: {
+          nodes: {
+            data: { id: '1', name: 'Jerry', priority: 'Low' }
+          }
+        }
+      }
+    ];
+
+    expect(projects(stateBefore, action)).toEqual(stateAfter);
+  });
 });

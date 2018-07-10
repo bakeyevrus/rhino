@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import $ from 'jquery';
 import random from 'random-name';
 import cytoscape from 'cytoscape';
@@ -11,79 +12,87 @@ import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import edgehandles from 'cytoscape-edgehandles';
 import './cytoscapeComponent.css';
 import ElementTooltipContent from './ElementTooltipContent';
-import elementsMock from '../model/MockData';
 
 panzoom(cytoscape);
 contextMenus(cytoscape, $);
 cytoscape.use(edgehandles);
 
-const config = {
-  style: [
-    {
-      selector: 'node',
-      css: {
-        shape: 'ellipse',
-        content: 'data(name)',
+const getCyConfig = (container, data) => {
+  const config = {
+    style: [
+      {
+        selector: 'node',
+        css: {
+          shape: 'ellipse',
+          content: 'data(name)'
+        }
       },
-    },
-    {
-      selector: 'edge',
-      css: {
-        'curve-style': 'bezier',
-        'target-arrow-color': '#ccc',
-        'target-arrow-shape': 'triangle',
-        'target-endpoint': 'outside-to-line',
-        'arrow-scale': 1.5,
+      {
+        selector: 'edge',
+        css: {
+          'curve-style': 'bezier',
+          'target-arrow-color': '#ccc',
+          'target-arrow-shape': 'triangle',
+          'target-endpoint': 'outside-to-line',
+          'arrow-scale': 1.5
+        }
       },
-    },
-    // some style for the extension
-    {
-      selector: '.eh-handle',
-      style: {
-        'background-color': 'red',
-        width: 12,
-        height: 12,
-        shape: 'ellipse',
-        'overlay-opacity': 0,
-        'border-width': 12, // makes the handle easier to hit
-        'border-opacity': 0,
+      // some style for the extension
+      {
+        selector: '.eh-handle',
+        style: {
+          'background-color': 'red',
+          width: 12,
+          height: 12,
+          shape: 'ellipse',
+          'overlay-opacity': 0,
+          'border-width': 12, // makes the handle easier to hit
+          'border-opacity': 0
+        }
       },
-    },
-    {
-      selector: '.eh-hover',
-      style: {
-        'background-color': 'red',
+      {
+        selector: '.eh-hover',
+        style: {
+          'background-color': 'red'
+        }
       },
-    },
-    {
-      selector: '.eh-source',
-      style: {
-        'border-width': 2,
-        'border-color': 'red',
+      {
+        selector: '.eh-source',
+        style: {
+          'border-width': 2,
+          'border-color': 'red'
+        }
       },
-    },
-    {
-      selector: '.eh-target',
-      style: {
-        'border-width': 2,
-        'border-color': 'red',
+      {
+        selector: '.eh-target',
+        style: {
+          'border-width': 2,
+          'border-color': 'red'
+        }
       },
-    },
-    {
-      selector: '.eh-preview, .eh-ghost-edge',
-      style: {
-        'background-color': 'red',
-        'line-color': 'red',
-        'target-arrow-color': 'red',
-        'source-arrow-color': 'red',
-      },
-    },
-  ],
-  elements: elementsMock,
-  layout: {
-    name: 'grid',
-    rows: 1,
-  },
+      {
+        selector: '.eh-preview, .eh-ghost-edge',
+        style: {
+          'background-color': 'red',
+          'line-color': 'red',
+          'target-arrow-color': 'red',
+          'source-arrow-color': 'red'
+        }
+      }
+    ],
+    layout: {
+      name: 'grid',
+      rows: 1
+    }
+  };
+
+  return {
+    ...config,
+    container,
+    elements: {
+      ...data
+    }
+  };
 };
 
 const zoomDefaults = {
@@ -111,7 +120,7 @@ const zoomDefaults = {
   sliderHandleIcon: 'fa fa-minus',
   zoomInIcon: 'fa fa-plus',
   zoomOutIcon: 'fa fa-minus',
-  resetIcon: 'fa fa-expand',
+  resetIcon: 'fa fa-expand'
 };
 
 class CytoscapeComponent extends React.Component {
@@ -129,15 +138,13 @@ class CytoscapeComponent extends React.Component {
   }
 
   componentDidMount() {
-    config.container = this.editorContainer;
+    const { graph } = this.props;
+    this.initialize(this.editorContainer, graph);
+  }
 
-    const cy = cytoscape(config);
-    this.panzoom = cy.panzoom(zoomDefaults);
-    this.menu = cy.contextMenus(this.getContextMenuConfig());
-    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
-    cy.on('click', 'node, edge', this.handleClick);
-    this.cy = cy;
-    this.counter = this.calculateLastId();
+  componentDidUpdate() {
+    const { graph } = this.props;
+    this.initialize(this.editorContainer, graph);
   }
 
   calculateLastId() {
@@ -185,7 +192,7 @@ class CytoscapeComponent extends React.Component {
           onClickFunction: (event) => {
             this.createNode(event.position.x, event.position.y);
           },
-          hasTrailingDivider: true,
+          hasTrailingDivider: true
         },
         {
           id: 'remove', // ID of menu item
@@ -208,7 +215,7 @@ class CytoscapeComponent extends React.Component {
           disabled: false, // Whether the item will be created as disabled
           show: true, // Whether the item will be shown or not
           hasTrailingDivider: true, // Whether the item will have a trailing divider
-          coreAsWell: false, // Whether core instance have this item on cxttap
+          coreAsWell: false // Whether core instance have this item on cxttap
         },
         {
           id: 'remove-all-selected',
@@ -220,7 +227,7 @@ class CytoscapeComponent extends React.Component {
           disabled: false,
           show: true,
           hasTrailingDivider: false,
-          coreAsWell: true,
+          coreAsWell: true
         },
         {
           id: 'select-all',
@@ -231,7 +238,7 @@ class CytoscapeComponent extends React.Component {
           },
           hasTrailingDivider: false,
           show: true,
-          coreAsWell: true,
+          coreAsWell: true
         },
         {
           id: 'select-all-nodes',
@@ -242,7 +249,7 @@ class CytoscapeComponent extends React.Component {
           },
           hasTrailingDivider: false,
           show: true,
-          coreAsWell: true,
+          coreAsWell: true
         },
         {
           id: 'select-all-edges',
@@ -253,8 +260,8 @@ class CytoscapeComponent extends React.Component {
           },
           hasTrailingDivider: true,
           show: true,
-          coreAsWell: true,
-        },
+          coreAsWell: true
+        }
       ],
       // css classes that menu items will have
       menuItemClasses: [
@@ -263,7 +270,7 @@ class CytoscapeComponent extends React.Component {
       // css classes that context menu will have
       contextMenuClasses: [
         // add class names to this list
-      ],
+      ]
     };
 
     return menuOptions;
@@ -304,8 +311,8 @@ class CytoscapeComponent extends React.Component {
             id: `${sourceNode.id()}_${targetNode.id()}`,
             source: sourceNode.id(),
             target: targetNode.id(),
-            priority: 'Low',
-          },
+            priority: 'Low'
+          }
         };
       },
       show(sourceNode) {
@@ -343,10 +350,21 @@ class CytoscapeComponent extends React.Component {
       },
       drawoff() {
         // fired when draw mode disabled
-      },
+      }
     };
 
     return defaults;
+  }
+
+  initialize(graph, container) {
+    const cyConfig = getCyConfig(graph, container);
+    const cy = cytoscape(cyConfig);
+    this.panzoom = cy.panzoom(zoomDefaults);
+    this.menu = cy.contextMenus(this.getContextMenuConfig());
+    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
+    cy.on('click', 'node, edge', this.handleClick);
+    this.cy = cy;
+    this.counter = this.calculateLastId();
   }
 
   createNode(x, y) {
@@ -355,9 +373,9 @@ class CytoscapeComponent extends React.Component {
       data: {
         id: this.getNextId(),
         name: random(),
-        priority: 'Medium',
+        priority: 'Medium'
       },
-      position: { x, y },
+      position: { x, y }
     });
   }
 
@@ -377,7 +395,7 @@ class CytoscapeComponent extends React.Component {
   handleAttributeChange(key, value) {
     this.cy.getElementById(this.state.selectedNodeData.id).data(key, value);
     this.setState(prevState => ({
-      selectedNodeData: { ...prevState.selectedNodeData, [key]: value },
+      selectedNodeData: { ...prevState.selectedNodeData, [key]: value }
     }));
   }
 
@@ -393,7 +411,7 @@ class CytoscapeComponent extends React.Component {
     const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
     selectedElement.data(name, value);
     this.setState(prevState => ({
-      selectedNodeData: { ...prevState.selectedNodeData, [name]: value },
+      selectedNodeData: { ...prevState.selectedNodeData, [name]: value }
     }));
   }
 
@@ -428,5 +446,25 @@ class CytoscapeComponent extends React.Component {
     );
   }
 }
+
+CytoscapeComponent.propTypes = {
+  graph: PropTypes.shape({
+    nodes: PropTypes.arrayOf(PropTypes.shape({
+      data: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        priority: PropTypes.string.isRequired,
+        name: PropTypes.string
+      })
+    })),
+    edges: PropTypes.arrayOf(PropTypes.shape({
+      data: PropTypes.shape({
+        source: PropTypes.string.isRequired,
+        target: PropTypes.string.isRequired,
+        priority: PropTypes.string.isRequired
+      })
+    }))
+  }).isRequired,
+  projectId: PropTypes.string.isRequired
+};
 
 export default CytoscapeComponent;

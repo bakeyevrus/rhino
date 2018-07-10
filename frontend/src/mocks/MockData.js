@@ -1,4 +1,4 @@
-const elements = {
+const project1 = {
   nodes: [
     { data: { id: '1', name: 'Jerry', priority: 'Low' } },
     { data: { id: '2', name: 'Elaine', priority: 'Medium' } },
@@ -18,4 +18,14 @@ const elements = {
   ]
 };
 
-export default elements;
+const project2 = {
+  nodes: [
+    { data: { id: '1', name: 'Jerry', priority: 'Low' } },
+    { data: { id: '2', name: 'Elaine', priority: 'Medium' } },
+    { data: { id: '3', name: 'Kramer', priority: 'High' } },
+    { data: { id: '4', name: 'George', priority: 'Low' } }
+  ],
+  edges: [{ data: { source: '1', target: '2', priority: 'Low' } }]
+};
+
+export { project1, project2 };

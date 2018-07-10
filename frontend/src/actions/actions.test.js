@@ -31,4 +31,23 @@ describe('actions', () => {
     };
     expect(actions.switchProject(targetProjectId)).toEqual(expectedAction);
   });
+
+  it('should create an action to save project', () => {
+    const projectId = mockUuid;
+    const elements = {
+      nodes: [
+        { data: { id: '1', name: 'Jerry', priority: 'Low' } },
+        { data: { id: '2', name: 'Elaine', priority: 'Medium' } },
+        { data: { id: '3', name: 'Kramer', priority: 'High' } },
+        { data: { id: '4', name: 'George', priority: 'Low' } }
+      ],
+      edges: [{ data: { source: '1', target: '2', priority: 'Low' } }]
+    };
+    const expectedAction = {
+      type: 'SAVE_PROJECT',
+      id: projectId,
+      elements
+    };
+    expect(actions.saveProject(projectId, elements)).toEqual(expectedAction);
+  });
 });

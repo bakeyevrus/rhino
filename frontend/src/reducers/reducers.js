@@ -1,5 +1,9 @@
 import { combineReducers } from 'redux';
 
+const findProjectIndexById = (state, id) =>
+  // TODO: solution doesn't work with IE 11
+  state.findIndex(project => project.id === id);
+
 export const projects = (state = [], action) => {
   switch (action.type) {
     case 'CREATE_PROJECT':
@@ -13,6 +17,19 @@ export const projects = (state = [], action) => {
       ];
     case 'REMOVE_PROJECT':
       return state.filter(project => project.id !== action.id);
+    case 'SAVE_PROJECT': {
+      const targetProjectIndex = findProjectIndexById(state, action.id);
+      const oldProject = state[targetProjectIndex];
+      const updatedProject = {
+        ...oldProject,
+        elements: action.elements
+      };
+      return [
+        ...state.slice(0, targetProjectIndex),
+        updatedProject,
+        ...state.slice(targetProjectIndex + 1, state.length)
+      ];
+    }
     default:
       return state;
   }
@@ -21,7 +38,6 @@ export const projects = (state = [], action) => {
 export const activeProjectId = (state = null, action) => {
   switch (action.type) {
     case 'SWITCH_PROJECT':
-      return action.id;
     case 'CREATE_PROJECT':
       return action.id;
     default:

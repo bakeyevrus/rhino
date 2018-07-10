@@ -10,7 +10,7 @@ class CreateAttributeComponent extends React.Component {
     this.state = {
       isOpen: false,
       key: '',
-      value: '',
+      value: ''
     };
 
     this.handleFormOpen = this.handleFormOpen.bind(this);
@@ -49,7 +49,7 @@ class CreateAttributeComponent extends React.Component {
   resetState() {
     this.setState({
       key: '',
-      value: '',
+      value: ''
     });
   }
 
@@ -121,7 +121,7 @@ class CreateAttributeComponent extends React.Component {
 
 CreateAttributeComponent.propTypes = {
   selectedOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onSaveClick: PropTypes.func.isRequired,
+  onSaveClick: PropTypes.func.isRequired
 };
 
 export default CreateAttributeComponent;

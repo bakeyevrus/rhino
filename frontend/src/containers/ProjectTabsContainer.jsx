@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { createProject, switchProject } from '../actions/actions';
+import { createProject } from '../actions/actions';
 import ProjectTabs from '../components/ProjectTabs';
 
 const mapStateToProps = state => ({
@@ -10,9 +10,9 @@ const mapStateToProps = state => ({
   }))
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch, ownProps) => ({
   onCreateProjectClick: name => dispatch(createProject(name)),
-  onSelectProject: id => dispatch(switchProject(id))
+  onProjectSwitch: id => ownProps.onProjectSwitch(id)
 });
 
 export default connect(

@@ -1,7 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ProjectTabsContainer from '../containers/ProjectTabsContainer';
 
-function Toolbar() {
+function Toolbar(props) {
+  const { onProjectSwitch } = props;
+
   return (
     <nav className="navbar navbar-expand navbar-dark bg-dark">
       <a className="navbar-brand" href="asd">
@@ -20,10 +23,14 @@ function Toolbar() {
       </button>
 
       <div className="collapse navbar-collapse" id="navbar">
-        <ProjectTabsContainer />
+        <ProjectTabsContainer onProjectSwitch={onProjectSwitch} />
       </div>
     </nav>
   );
 }
+
+Toolbar.propTypes = {
+  onProjectSwitch: PropTypes.func.isRequired
+};
 
 export default Toolbar;
