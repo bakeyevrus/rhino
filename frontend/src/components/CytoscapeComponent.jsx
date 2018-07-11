@@ -145,6 +145,17 @@ class CytoscapeComponent extends React.Component {
     this.initialize(graph, this.editorContainer);
   }
 
+  initialize(graph, container) {
+    const cyConfig = getCyConfig(container, graph);
+    const cy = cytoscape(cyConfig);
+    this.panzoom = cy.panzoom(zoomDefaults);
+    this.menu = cy.contextMenus(this.getContextMenuConfig());
+    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
+    cy.on('click', 'node, edge', this.handleClick);
+    this.cy = cy;
+    this.counter = this.calculateLastId();
+  }
+
   calculateLastId() {
     const lastIdStr = this.cy.nodes().max(element => element.id()).value;
     return parseInt(lastIdStr, 10) + 1;
@@ -354,22 +365,10 @@ class CytoscapeComponent extends React.Component {
     return defaults;
   }
 
-  initialize(graph, container) {
-    const cyConfig = getCyConfig(graph, container);
-    const cy = cytoscape(cyConfig);
-    this.panzoom = cy.panzoom(zoomDefaults);
-    this.menu = cy.contextMenus(this.getContextMenuConfig());
-    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
-    cy.on('click', 'node, edge', this.handleClick);
-    this.cy = cy;
-    this.counter = this.calculateLastId();
-  }
-
   createNode(x, y) {
     this.cy.add({
       group: 'nodes',
       data: {
-        id: this.getNextId(),
         name: random(),
         priority: 'Medium'
       },
@@ -386,7 +385,7 @@ class CytoscapeComponent extends React.Component {
     if (element && element.isNode()) {
       this.setState({ selectedNodeData: element.data() });
     } else {
-      this.setState({ selectedNodeData: element.data() });
+      this.setState({ selectedNodeData: null });
     }
   }
 
@@ -417,10 +416,10 @@ class CytoscapeComponent extends React.Component {
     console.log(this.cy.json());
   }
 
-  handleProjectSave() {
+  saveProject() {
     const { projectId, onProjectSave } = this.props;
-    const graph = this.cy;
-    console.log(graph);
+    const graph = this.cy.json();
+    onProjectSave(projectId, graph.elements);
   }
 
   render() {
@@ -468,7 +467,8 @@ CytoscapeComponent.propTypes = {
       })
     }))
   }).isRequired,
-  projectId: PropTypes.string.isRequired
+  projectId: PropTypes.string.isRequired,
+  onProjectSave: PropTypes.func.isRequired
 };
 
 export default CytoscapeComponent;
