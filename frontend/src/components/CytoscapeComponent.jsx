@@ -146,7 +146,7 @@ class CytoscapeComponent extends React.Component {
   }
 
   initialize(graph, container) {
-    const cyConfig = getCyConfig(container, graph);
+    const cyConfig = getCyConfig(graph, container);
     const cy = cytoscape(cyConfig);
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
@@ -385,7 +385,7 @@ class CytoscapeComponent extends React.Component {
     if (element && element.isNode()) {
       this.setState({ selectedNodeData: element.data() });
     } else {
-      this.setState({ selectedNodeData: null });
+      this.setState({ selectedNodeData: element.data() });
     }
   }
 
@@ -451,22 +451,7 @@ class CytoscapeComponent extends React.Component {
 }
 
 CytoscapeComponent.propTypes = {
-  graph: PropTypes.shape({
-    nodes: PropTypes.arrayOf(PropTypes.shape({
-      data: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        priority: PropTypes.string.isRequired,
-        name: PropTypes.string
-      })
-    })),
-    edges: PropTypes.arrayOf(PropTypes.shape({
-      data: PropTypes.shape({
-        source: PropTypes.string.isRequired,
-        target: PropTypes.string.isRequired,
-        priority: PropTypes.string.isRequired
-      })
-    }))
-  }).isRequired,
+  graph: PropTypes.oneOfType([PropTypes.array]).isRequired,
   projectId: PropTypes.string.isRequired,
   onProjectSave: PropTypes.func.isRequired
 };

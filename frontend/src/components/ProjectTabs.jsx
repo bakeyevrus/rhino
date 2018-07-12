@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import CreateProject from './CreateProject';
 import Project from './Project';
 
-function ProjectTabs({ projects, onProjectSwitch, onCreateProjectClick }) {
+function ProjectTabs({ projects, onProjectSwitch, onProjectCreate }) {
   return (
     <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
       {projects.map(project => (
@@ -15,7 +15,7 @@ function ProjectTabs({ projects, onProjectSwitch, onCreateProjectClick }) {
           onProjectSwitch={onProjectSwitch}
         />
       ))}
-      <CreateProject onCreateProjectClick={onCreateProjectClick} />
+      <CreateProject onProjectCreate={onProjectCreate} />
     </ul>
   );
 }
@@ -27,7 +27,7 @@ ProjectTabs.propTypes = {
     active: PropTypes.bool.isRequired
   })).isRequired,
   onProjectSwitch: PropTypes.func.isRequired,
-  onCreateProjectClick: PropTypes.func.isRequired
+  onProjectCreate: PropTypes.func.isRequired
 };
 
 export default ProjectTabs;

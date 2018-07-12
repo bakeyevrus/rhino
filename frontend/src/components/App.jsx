@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { switchProject } from '../actions/actions';
+import { switchProject, createProject } from '../actions/actions';
 import CytoscapeContainer from '../containers/CytoscapeContainer';
 import Toolbar from './Toolbar';
 
@@ -18,9 +18,14 @@ function App(props) {
     dispatch(switchProject(targetProjectId));
   };
 
+  const onProjectCreate = (newProjectName) => {
+    saveActiveProject();
+    dispatch(createProject(newProjectName));
+  };
+
   return (
     <React.Fragment>
-      <Toolbar onProjectSwitch={onProjectSwitch} />
+      <Toolbar onProjectSwitch={onProjectSwitch} onProjectCreate={onProjectCreate} />
       <CytoscapeContainer ref={myRef} />
     </React.Fragment>
   );

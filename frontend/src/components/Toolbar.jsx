@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ProjectTabsContainer from '../containers/ProjectTabsContainer';
 
 function Toolbar(props) {
-  const { onProjectSwitch } = props;
+  const { onProjectSwitch, onProjectCreate } = props;
 
   return (
     <nav className="navbar navbar-expand navbar-dark bg-dark">
@@ -23,14 +23,15 @@ function Toolbar(props) {
       </button>
 
       <div className="collapse navbar-collapse" id="navbar">
-        <ProjectTabsContainer onProjectSwitch={onProjectSwitch} />
+        <ProjectTabsContainer onProjectSwitch={onProjectSwitch} onProjectCreate={onProjectCreate} />
       </div>
     </nav>
   );
 }
 
 Toolbar.propTypes = {
-  onProjectSwitch: PropTypes.func.isRequired
+  onProjectSwitch: PropTypes.func.isRequired,
+  onProjectCreate: PropTypes.func.isRequired
 };
 
 export default Toolbar;

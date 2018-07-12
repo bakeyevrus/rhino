@@ -27,8 +27,8 @@ class CreateProject extends React.Component {
   handleSaveClick(event) {
     event.preventDefault();
     const { inputValue } = this.state;
-    const { onCreateProjectClick } = this.props;
-    onCreateProjectClick(inputValue);
+    const { onProjectCreate } = this.props;
+    onProjectCreate(inputValue);
     this.closeForm();
   }
 
@@ -88,7 +88,7 @@ class CreateProject extends React.Component {
 }
 
 CreateProject.propTypes = {
-  onCreateProjectClick: PropTypes.func.isRequired
+  onProjectCreate: PropTypes.func.isRequired
 };
 
 export default CreateProject;
