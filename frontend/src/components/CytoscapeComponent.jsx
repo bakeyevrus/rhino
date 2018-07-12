@@ -125,7 +125,9 @@ class CytoscapeComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      selectedNodeData: null
+    };
 
     this.handleClick = this.handleClick.bind(this);
     this.handleExportButtonClick = this.handleExportButtonClick.bind(this);
@@ -140,9 +142,12 @@ class CytoscapeComponent extends React.Component {
     this.initialize(graph, this.editorContainer);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { graph } = this.props;
-    this.initialize(graph, this.editorContainer);
+    // Re-render cytoscape container only in case if graph has been changed
+    if (graph !== prevProps.graph) {
+      this.initialize(graph, this.editorContainer);
+    }
   }
 
   initialize(graph, container) {
