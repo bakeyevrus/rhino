@@ -9,7 +9,7 @@ function ElementTooltipContent({
   elementAttributes,
   onAttributeChange,
   onCreateAttributeClick,
-  onDeleteAttributeClick,
+  onDeleteAttributeClick
 }) {
   const handleFormChange = key => (event) => {
     const newValue = event.target.value;
@@ -119,7 +119,9 @@ function ElementTooltipContent({
               </div>
             ))}
           <CreateAttributeComponent
-            selectedOptions={Object.keys(customAttributes)}
+            selectedOptions={
+              Object.keys(customAttributes).filter(attribute => customAttributes[attribute] != null)
+            }
             onSaveClick={onCreateAttributeClick}
           />
         </div>
@@ -132,7 +134,7 @@ ElementTooltipContent.propTypes = {
   elementAttributes: PropTypes.objectOf(PropTypes.string).isRequired,
   onAttributeChange: PropTypes.func.isRequired,
   onDeleteAttributeClick: PropTypes.func.isRequired,
-  onCreateAttributeClick: PropTypes.func.isRequired,
+  onCreateAttributeClick: PropTypes.func.isRequired
 };
 
 export default ElementTooltipContent;
