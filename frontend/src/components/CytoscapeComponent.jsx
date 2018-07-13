@@ -423,6 +423,8 @@ class CytoscapeComponent extends React.Component {
 
   saveProject() {
     const { projectId, onProjectSave } = this.props;
+    // Hide edgehandles ('red dots') before saving
+    this.edgeHandles.hide();
     const graph = this.cy.json();
     onProjectSave(projectId, graph.elements);
   }
