@@ -10,6 +10,7 @@
     "cytoscape-edgehandles": "^3.2.4",
     "cytoscape-panzoom": "^2.5.2",
     "jquery": "^3.3.1",
+    "lodash.isempty": "^4.4.0",
     "random-name": "^0.1.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
@@ -24,7 +25,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build" 
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "eslint": "^4.19.1",

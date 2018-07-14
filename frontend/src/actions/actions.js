@@ -16,8 +16,8 @@ export const switchProject = targetProjectId => ({
   id: targetProjectId
 });
 
-export const saveProject = (id, elements) => ({
+export const saveProject = (id, graph) => ({
   type: 'SAVE_PROJECT',
   id,
-  elements
+  graph
 });

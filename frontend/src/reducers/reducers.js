@@ -12,7 +12,7 @@ export const projects = (state = [], action) => {
         {
           id: action.id,
           name: action.name,
-          elements: []
+          graph: {}
         }
       ];
     case 'REMOVE_PROJECT':
@@ -22,7 +22,7 @@ export const projects = (state = [], action) => {
       const oldProject = state[targetProjectIndex];
       const updatedProject = {
         ...oldProject,
-        elements: action.elements
+        graph: action.graph
       };
       return [
         ...state.slice(0, targetProjectIndex),

@@ -27,8 +27,7 @@ class CytoscapeContainer extends React.Component {
 
   handleProjectSave(projectId, graph) {
     const { store } = this.context;
-    const { edges = [], nodes = [] } = graph;
-    store.dispatch(saveProject(projectId, [...edges, ...nodes]));
+    store.dispatch(saveProject(projectId, graph));
   }
 
   render() {
@@ -37,10 +36,12 @@ class CytoscapeContainer extends React.Component {
     const state = store.getState();
     const { activeProjectId, projects } = state;
     const activeProject = projects.find(project => project.id === activeProjectId);
+    console.log(`Rendering project ${activeProject.name}`);
+    console.log(activeProject);
     return (
       <CytoscapeComponent
         projectId={activeProject.id}
-        graph={activeProject.elements}
+        graph={activeProject.graph}
         onProjectSave={this.handleProjectSave}
         ref={forwardedRef}
       />

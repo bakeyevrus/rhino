@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import isEmpty from 'lodash.isempty';
 import $ from 'jquery';
 import random from 'random-name';
 import cytoscape from 'cytoscape';
@@ -17,7 +18,7 @@ panzoom(cytoscape);
 contextMenus(cytoscape, $);
 cytoscape.use(edgehandles);
 
-const getCyConfig = (data, container) => {
+const getCyConfig = (container) => {
   const config = {
     style: [
       {
@@ -88,8 +89,7 @@ const getCyConfig = (data, container) => {
 
   return {
     ...config,
-    container,
-    elements: [...data]
+    container
   };
 };
 
@@ -146,30 +146,24 @@ class CytoscapeComponent extends React.Component {
     const { graph } = this.props;
     // Re-render cytoscape container only in case if graph has been changed
     if (graph !== prevProps.graph) {
-      this.initialize(graph, this.editorContainer);
+      if (isEmpty(graph)) {
+        // Clear the elements in graph, leave the config
+        this.cy.json({ elements: {} });
+      } else {
+        // Override the config
+        this.cy.json(graph);
+      }
     }
   }
 
   initialize(graph, container) {
-    const cyConfig = getCyConfig(graph, container);
+    const cyConfig = getCyConfig(container);
     const cy = cytoscape(cyConfig);
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
     this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
     cy.on('click', 'node, edge', this.handleClick);
     this.cy = cy;
-    this.counter = this.calculateLastId();
-  }
-
-  calculateLastId() {
-    const lastIdStr = this.cy.nodes().max(element => element.id()).value;
-    return parseInt(lastIdStr, 10) + 1;
-  }
-
-  getNextId() {
-    const nextId = this.counter;
-    this.counter = nextId + 1;
-    return nextId;
   }
 
   componentWillUnmount() {
@@ -426,7 +420,7 @@ class CytoscapeComponent extends React.Component {
     // Hide edgehandles ('red dots') before saving
     this.edgeHandles.hide();
     const graph = this.cy.json();
-    onProjectSave(projectId, graph.elements);
+    onProjectSave(projectId, graph);
   }
 
   render() {
@@ -458,7 +452,7 @@ class CytoscapeComponent extends React.Component {
 }
 
 CytoscapeComponent.propTypes = {
-  graph: PropTypes.oneOfType([PropTypes.array]).isRequired,
+  graph: PropTypes.object.isRequired,
   projectId: PropTypes.string.isRequired,
   onProjectSave: PropTypes.func.isRequired
 };

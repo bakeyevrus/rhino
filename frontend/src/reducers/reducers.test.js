@@ -20,7 +20,7 @@ describe('reducers', () => {
       {
         id: 1,
         name: 'Test project',
-        elements: {}
+        graph: {}
       }
     ];
 
@@ -60,9 +60,11 @@ describe('reducers', () => {
       {
         id: 1,
         name: 'Test project',
-        elements: {
-          nodes: {
-            data: { id: '2', name: 'Ron', priority: 'High' }
+        graph: {
+          elements: {
+            nodes: {
+              data: { id: '2', name: 'Ron', priority: 'High' }
+            }
           }
         }
       }
@@ -70,9 +72,11 @@ describe('reducers', () => {
     const action = {
       type: 'SAVE_PROJECT',
       id: 1,
-      elements: {
-        nodes: {
-          data: { id: '1', name: 'Jerry', priority: 'Low' }
+      graph: {
+        elements: {
+          nodes: {
+            data: { id: '1', name: 'Jerry', priority: 'Low' }
+          }
         }
       }
     };
@@ -80,9 +84,11 @@ describe('reducers', () => {
       {
         id: 1,
         name: 'Test project',
-        elements: {
-          nodes: {
-            data: { id: '1', name: 'Jerry', priority: 'Low' }
+        graph: {
+          elements: {
+            nodes: {
+              data: { id: '1', name: 'Jerry', priority: 'Low' }
+            }
           }
         }
       }
