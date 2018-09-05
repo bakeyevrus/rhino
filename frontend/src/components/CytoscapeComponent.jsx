@@ -13,6 +13,7 @@ import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import edgehandles from 'cytoscape-edgehandles';
 import './cytoscapeComponent.css';
 import ElementTooltipContent from './ElementTooltipContent';
+import { PRIORITY } from '../constants';
 
 panzoom(cytoscape);
 contextMenus(cytoscape, $);
@@ -319,7 +320,7 @@ class CytoscapeComponent extends React.Component {
             id: `${sourceNode.id()}_${targetNode.id()}`,
             source: sourceNode.id(),
             target: targetNode.id(),
-            priority: 'Low'
+            priority: PRIORITY.LOW
           }
         };
       },
@@ -369,7 +370,7 @@ class CytoscapeComponent extends React.Component {
       group: 'nodes',
       data: {
         name: random(),
-        priority: 'Medium'
+        priority: 'Low'
       },
       position: { x, y }
     });

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-const KEY_FORM_OPTIONS = ['Weight', 'Probability', 'Radius'];
+import { ATTRIBUTE_FORM_CUSTOM_OPTIONS } from '../constants';
 
 class CreateAttributeComponent extends React.Component {
   constructor(props) {
@@ -61,7 +60,7 @@ class CreateAttributeComponent extends React.Component {
     const { isOpen, key, value } = this.state;
     const { selectedOptions } = this.props;
 
-    const filteredKeyFormOptions = KEY_FORM_OPTIONS.filter(option => !selectedOptions.includes(option));
+    const filteredKeyFormOptions = ATTRIBUTE_FORM_CUSTOM_OPTIONS.filter(option => !selectedOptions.includes(option));
 
     if (!isOpen) {
       return (
@@ -83,7 +82,7 @@ class CreateAttributeComponent extends React.Component {
             <span className="input-group-text">Key and value</span>
           </div>
           <select name="key" value={key} onChange={this.handleFormChange} className="custom-select">
-            {/* Set value as empty string explicitely to force user select another option,
+            {/* Set value as empty string explicitly to force user select another option,
             otherwise validate() function won't be passed */}
             <option value="">Select key</option>
             {filteredKeyFormOptions.map(option => (

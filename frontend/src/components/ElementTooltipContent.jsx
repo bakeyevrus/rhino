@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import map from 'lodash.map';
+import { PRIORITY } from '../constants';
 import CreateAttributeComponent from './CreateAttributeComponent';
 import './elementTooltipContent.css';
-
-const PRIORITY_FORM_OPTIONS = ['Low', 'Medium', 'High'];
 
 function ElementTooltipContent({
   elementAttributes,
@@ -79,7 +79,7 @@ function ElementTooltipContent({
               className="custom-select"
               onChange={handleFormChange('priority')}
             >
-              {PRIORITY_FORM_OPTIONS.map(option => (
+              {map(PRIORITY, option => (
                 <option key={`option-${option}`} value={option}>
                   {option}
                 </option>
@@ -119,9 +119,7 @@ function ElementTooltipContent({
               </div>
             ))}
           <CreateAttributeComponent
-            selectedOptions={
-              Object.keys(customAttributes).filter(attribute => customAttributes[attribute] != null)
-            }
+            selectedOptions={Object.keys(customAttributes).filter(attribute => customAttributes[attribute] != null)}
             onSaveClick={onCreateAttributeClick}
           />
         </div>
