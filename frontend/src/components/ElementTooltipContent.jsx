@@ -23,15 +23,6 @@ function ElementTooltipContent({
     <div className="container-fluid">
       <div className="row">
         <div className="attributes-container">
-          {/* ID attribute form */}
-          <div className="input-group mb-2">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                ID
-              </span>
-            </div>
-            <input readOnly type="text" className="form-control" name="id-form" value={id} />
-          </div>
           {/* Source attribute form */}
           {source && (
             <div className="input-group mb-2">

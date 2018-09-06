@@ -131,6 +131,8 @@ class CytoscapeComponent extends React.Component {
     };
 
     this.handleClick = this.handleClick.bind(this);
+    this.showElementInfo = this.showElementInfo.bind(this);
+    this.hideElementInfo = this.hideElementInfo.bind(this);
     this.handleExportButtonClick = this.handleExportButtonClick.bind(this);
     this.removeElement = this.removeElement.bind(this);
     this.handleCreateAttributeClick = this.handleCreateAttributeClick.bind(this);
@@ -163,7 +165,7 @@ class CytoscapeComponent extends React.Component {
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
     this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
-    cy.on('click', 'node, edge', this.handleClick);
+    cy.on('click', this.handleClick);
     this.cy = cy;
   }
 
@@ -380,12 +382,25 @@ class CytoscapeComponent extends React.Component {
     this.cy.remove(element);
   }
 
+  showElementInfo(element) {
+    const { id, ...elementData } = element.data();
+    this.setState({ selectedNodeData: elementData });
+  }
+
+  hideElementInfo() {
+    const { selectedNodeData } = this.state;
+
+    if (selectedNodeData != null) {
+      this.setState({ selectedNodeData: null });
+    }
+  }
+
   handleClick(event) {
     const element = event.target;
-    if (element && element.isNode()) {
-      this.setState({ selectedNodeData: element.data() });
+    if (element === this.cy) {
+      this.hideElementInfo();
     } else {
-      this.setState({ selectedNodeData: element.data() });
+      this.showElementInfo(element);
     }
   }
 
