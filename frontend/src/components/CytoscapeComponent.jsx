@@ -383,8 +383,7 @@ class CytoscapeComponent extends React.Component {
   }
 
   showElementInfo(element) {
-    const { id, ...elementData } = element.data();
-    this.setState({ selectedNodeData: elementData });
+    this.setState({ selectedNodeData:  element.data() });
   }
 
   hideElementInfo() {
