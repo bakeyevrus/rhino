@@ -1,4 +1,5 @@
 import uuid from 'uuid/v4';
+import { fetchAllProjects } from '../services/AjaxService';
 
 export const createProject = name => ({
   type: 'CREATE_PROJECT',
@@ -21,3 +22,24 @@ export const saveProject = (id, graph) => ({
   id,
   graph
 });
+
+// How initial state could look like
+// const initialState = {
+//   activeProjectId: '1ff-2xx',
+//   projects: [
+//     {
+//       id: '1ff-2xx',
+//       name: 'Test project #1',
+//       graph: {}
+//     }
+//   ]
+// };
+
+const setInitialState = initialState => ({
+  type: 'SET_INITIAL_STATE',
+  initialState
+});
+
+export const getAllProjects = () => (dispatch) => {
+  fetchAllProjects().then(projects => dispatch(setInitialState(projects)));
+};

@@ -9,6 +9,38 @@ describe('reducers', () => {
     expect(reducer(undefined, {})).toEqual(stateAfter);
   });
 
+  it('should handle SET_INITIAL_STATE', () => {
+    const stateBefore = {
+      activeProjectId: null,
+      projects: []
+    };
+    const action = {
+      type: 'SET_INITIAL_STATE',
+      initialState: {
+        activeProjectId: '1ff-2xx',
+        projects: [
+          {
+            id: '1ff-2xx',
+            name: 'Test project #1',
+            graph: {}
+          }
+        ]
+      }
+    };
+    const stateAfter = {
+      activeProjectId: '1ff-2xx',
+      projects: [
+        {
+          id: '1ff-2xx',
+          name: 'Test project #1',
+          graph: {}
+        }
+      ]
+    };
+
+    expect(reducer(stateBefore, action)).toEqual(stateAfter);
+  });
+
   it('should handle CREATE_PROJECT', () => {
     const stateBefore = [];
     const action = {

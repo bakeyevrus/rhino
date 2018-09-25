@@ -59,8 +59,7 @@ class CreateAttributeComponent extends React.Component {
   render() {
     const { isOpen, key, value } = this.state;
     const { selectedOptions } = this.props;
-
-    const filteredKeyFormOptions = ATTRIBUTE_FORM_CUSTOM_OPTIONS.filter(option => !selectedOptions.includes(option));
+    const filteredKeyFormOptions = Object.values(ATTRIBUTE_FORM_CUSTOM_OPTIONS).filter(option => !selectedOptions.includes(option));
 
     if (!isOpen) {
       return (

@@ -36,12 +36,10 @@ class CytoscapeContainer extends React.Component {
     const state = store.getState();
     const { activeProjectId, projects } = state;
     const activeProject = projects.find(project => project.id === activeProjectId);
-    console.log(`Rendering project ${activeProject.name}`);
-    console.log(activeProject);
+
     return (
       <CytoscapeComponent
-        projectId={activeProject.id}
-        graph={activeProject.graph}
+        project={activeProject}
         onProjectSave={this.handleProjectSave}
         ref={forwardedRef}
       />

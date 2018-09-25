@@ -1,21 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import App from './App';
 import { rootReducer } from '../reducers/reducers';
 
-const initialState = {
-  activeProjectId: '1ff-2xx',
-  projects: [
-    {
-      id: '1ff-2xx',
-      name: 'Test project #1',
-      graph: {}
-    }
-  ]
-};
-
-const store = createStore(rootReducer, initialState);
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 function Root() {
   return (

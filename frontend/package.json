@@ -2,6 +2,7 @@
   "name": "rhino",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "homepage": "http://bakeyevrus.github.io/rhino",
   "dependencies": {
     "bootstrap": "^4.1.1",
@@ -12,12 +13,14 @@
     "jquery": "^3.3.1",
     "lodash.isempty": "^4.4.0",
     "lodash.map": "^4.6.0",
+    "lodash.upperfirst": "^4.3.1",
     "random-name": "^0.1.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.1",
     "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2"
   },
   "scripts": {

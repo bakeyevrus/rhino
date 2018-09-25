@@ -1,7 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import map from 'lodash.map';
-import { PRIORITY } from '../constants';
+import upperFirst from 'lodash.upperfirst';
+import {
+  PRIORITY,
+  ATTRIBUTE_FORM_OPTIONS as REQUIRED_ATTRIBUTES,
+  ATTRIBUTE_FORM_CUSTOM_OPTIONS as CUSTOM_ATTRIBUTES
+} from '../constants';
+import AttributeForm from './AttributeForm';
 import CreateAttributeComponent from './CreateAttributeComponent';
 import './elementTooltipContent.css';
 
@@ -16,47 +22,27 @@ function ElementTooltipContent({
     onAttributeChange(key, newValue);
   };
   const {
-    id, priority, source, target, ...customAttributes
+    name, priority, from, to
   } = elementAttributes;
+
+  const elementCustomAttributes = Object.keys(CUSTOM_ATTRIBUTES)
+    .filter((attrKey) => {
+      const attrName = CUSTOM_ATTRIBUTES[attrKey];
+      return elementAttributes[attrName] != null;
+    })
+    .map(attrKey => CUSTOM_ATTRIBUTES[attrKey]);
 
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="attributes-container">
-          {/* Source attribute form */}
-          {source && (
-            <div className="input-group mb-2">
-              <div className="input-group-prepend">
-                <span className="input-group-text" id="basic-addon1">
-                  Source
-                </span>
-              </div>
-              <input
-                readOnly
-                type="text"
-                className="form-control"
-                name="source-form"
-                value={source}
-              />
-            </div>
-          )}
-          {/* Target attribute form */}
-          {target && (
-            <div className="input-group mb-2">
-              <div className="input-group-prepend">
-                <span className="input-group-text" id="basic-addon1">
-                  Target
-                </span>
-              </div>
-              <input
-                readOnly
-                type="text"
-                className="form-control"
-                name="target-form"
-                value={target}
-              />
-            </div>
-          )}
+          {/* Name attribute form */}
+          <AttributeForm
+            name="name-form"
+            value={name}
+            label="Name"
+            onChange={handleFormChange(REQUIRED_ATTRIBUTES.NAME)}
+          />
           {/* Priority attribute form */}
           <div className="input-group mb-2">
             <div className="input-group-prepend">
@@ -68,7 +54,7 @@ function ElementTooltipContent({
               name="priority-form"
               value={priority}
               className="custom-select"
-              onChange={handleFormChange('priority')}
+              onChange={handleFormChange(REQUIRED_ATTRIBUTES.PRIORITY)}
             >
               {map(PRIORITY, option => (
                 <option key={`option-${option}`} value={option}>
@@ -77,40 +63,39 @@ function ElementTooltipContent({
               ))}
             </select>
           </div>
-
-          {Object.entries(customAttributes)
-            // Get the second attribute from array and check if not null
-            .filter(([, value]) => value != null)
-            .map(([key, value]) => (
-              <div key={`input-group-${key}`} className="input-group mb-2">
-                {/* It is not convenient to change attribute keys.
-              Need to call cy.removeData() and then cy.data(newName, oldValue) */}
-                <div className="input-group-prepend">
-                  <span className="input-group-text" id="basic-addon1">
-                    {key}
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control"
-                  name={`${key}-form`}
-                  value={value}
-                  onChange={handleFormChange(key)}
-                />
-                <div className="input-group-append ml-1">
-                  <button
-                    type="button"
-                    className="close"
-                    aria-label="Close"
-                    onClick={onDeleteAttributeClick(key)}
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+          {/* From attribute form */}
+          {from && (
+            <AttributeForm
+              readOnly
+              name="from-form"
+              value={from}
+              label="From"
+              onChange={handleFormChange(REQUIRED_ATTRIBUTES.FROM)}
+            />
+          )}
+          {/* From attribute form */}
+          {to && (
+            <AttributeForm
+              readOnly
+              name="to-form"
+              value={to}
+              label="To"
+              onChange={handleFormChange(REQUIRED_ATTRIBUTES.TO)}
+            />
+          )}
+          {/* Custom attributes */}
+          {elementCustomAttributes.map(attrName => (
+            <AttributeForm
+              key={attrName}
+              name={`${attrName}-form`}
+              value={elementAttributes[attrName]}
+              label={upperFirst(attrName)}
+              onChange={handleFormChange(attrName)}
+              onDeleteClick={onDeleteAttributeClick(attrName)}
+            />
+          ))}
           <CreateAttributeComponent
-            selectedOptions={Object.keys(customAttributes).filter(attribute => customAttributes[attribute] != null)}
+            selectedOptions={elementCustomAttributes}
             onSaveClick={onCreateAttributeClick}
           />
         </div>
@@ -120,7 +105,7 @@ function ElementTooltipContent({
 }
 
 ElementTooltipContent.propTypes = {
-  elementAttributes: PropTypes.objectOf(PropTypes.string).isRequired,
+  elementAttributes: PropTypes.object.isRequired,
   onAttributeChange: PropTypes.func.isRequired,
   onDeleteAttributeClick: PropTypes.func.isRequired,
   onCreateAttributeClick: PropTypes.func.isRequired

@@ -4,6 +4,25 @@ const mockUuid = '00000000-0000-0000-0000-000000000000';
 jest.mock('uuid/v4', () => () => mockUuid);
 
 describe('actions', () => {
+  // it('should set initial state for application', () => {
+  //   const initialState = {
+  //     activeProjectId: '1ff-2xx',
+  //     projects: [
+  //       {
+  //         id: '1ff-2xx',
+  //         name: 'Test project #1',
+  //         graph: {}
+  //       }
+  //     ]
+  //   };
+  //   const expectedAction = {
+  //     type: 'SET_INITIAL_STATE',
+  //     initialState
+  //   };
+
+  //   expect(actions.getAllProjects()).toEqual(expectedAction);
+  // });
+
   it('should create an action to add new project', () => {
     const name = 'Test project';
     const expectedAction = {

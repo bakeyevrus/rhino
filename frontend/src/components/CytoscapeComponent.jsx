@@ -13,7 +13,8 @@ import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import edgehandles from 'cytoscape-edgehandles';
 import './cytoscapeComponent.css';
 import ElementTooltipContent from './ElementTooltipContent';
-import { PRIORITY } from '../constants';
+import { PRIORITY, ATTRIBUTE_FORM_OPTIONS as OPTIONS } from '../constants';
+import createIdCounter from '../utils/IdCounter';
 
 panzoom(cytoscape);
 contextMenus(cytoscape, $);
@@ -127,7 +128,7 @@ class CytoscapeComponent extends React.Component {
     super(props);
 
     this.state = {
-      selectedNodeData: null
+      selectedElementData: null
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -141,14 +142,18 @@ class CytoscapeComponent extends React.Component {
   }
 
   componentDidMount() {
-    const { graph } = this.props;
+    const { project } = this.props;
+    const { graph, lastNodeId, lastEdgeId } = project;
+    this.counter = createIdCounter(lastNodeId, lastEdgeId);
     this.initialize(graph, this.editorContainer);
   }
 
   componentDidUpdate(prevProps) {
-    const { graph } = this.props;
+    const { project } = this.props;
     // Re-render cytoscape container only in case if graph has been changed
-    if (graph !== prevProps.graph) {
+    if (project !== prevProps.project) {
+      const { graph } = project;
+      this.counter = createIdCounter();
       if (isEmpty(graph)) {
         // Clear the elements in graph, leave the config
         this.cy.json({ elements: {} });
@@ -164,8 +169,9 @@ class CytoscapeComponent extends React.Component {
     const cy = cytoscape(cyConfig);
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
-    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig());
+    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig(this.counter, cy));
     cy.on('click', this.handleClick);
+    cy.json(graph);
     this.cy = cy;
   }
 
@@ -287,7 +293,7 @@ class CytoscapeComponent extends React.Component {
     return menuOptions;
   }
 
-  getEdgehanadlesConfig() {
+  getEdgehanadlesConfig(counter, cy) {
     // the default values of each option are outlined below:
     const defaults = {
       preview: true, // whether to show added edges preview before releasing selection
@@ -319,9 +325,10 @@ class CytoscapeComponent extends React.Component {
         return {
           group: 'edges',
           data: {
-            id: `${sourceNode.id()}_${targetNode.id()}`,
             source: sourceNode.id(),
             target: targetNode.id(),
+            from: sourceNode.data('name'),
+            to: targetNode.data('name'),
             priority: PRIORITY.LOW
           }
         };
@@ -337,6 +344,16 @@ class CytoscapeComponent extends React.Component {
       },
       complete(sourceNode, targetNode, addedEles) {
         // fired when edgehandles is done and elements are added
+        let name = counter.nextNumber();
+        const isNameValid = (cy, edgeName) => {
+          const result = cy.filter(`[name = '${edgeName}']`);
+          console.log(cy.json());
+          return result.size() === 0;
+        };
+        while (!isNameValid(cy, name)) {
+          name = counter.nextNumber();
+        }
+        addedEles.data('name', name);
       },
       stop(sourceNode) {
         // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
@@ -367,12 +384,21 @@ class CytoscapeComponent extends React.Component {
     return defaults;
   }
 
+  isNameValid(elementName) {
+    return this.cy.filter(`[name = "${elementName}"]`).size() === 0;
+  }
+
   createNode(x, y) {
+    let name = this.counter.nextLetter();
+    while (!this.isNameValid(name)) {
+      name = this.counter.nextLetter();
+    }
+
     this.cy.add({
       group: 'nodes',
       data: {
-        name: random(),
-        priority: 'Low'
+        name,
+        priority: PRIORITY.LOW
       },
       position: { x, y }
     });
@@ -383,14 +409,14 @@ class CytoscapeComponent extends React.Component {
   }
 
   showElementInfo(element) {
-    this.setState({ selectedNodeData:  element.data() });
+    this.setState({ selectedElementData: element.data() });
   }
 
   hideElementInfo() {
-    const { selectedNodeData } = this.state;
+    const { selectedElementData } = this.state;
 
-    if (selectedNodeData != null) {
-      this.setState({ selectedNodeData: null });
+    if (selectedElementData != null) {
+      this.setState({ selectedElementData: null });
     }
   }
 
@@ -404,25 +430,32 @@ class CytoscapeComponent extends React.Component {
   }
 
   handleAttributeChange(key, value) {
-    this.cy.getElementById(this.state.selectedNodeData.id).data(key, value);
+    const targetElement = this.cy.getElementById(this.state.selectedElementData.id);
+    targetElement.data(key, value);
+    // Update all edges if node name changes
+    if (targetElement.isNode() && key === OPTIONS.NAME) {
+      // TODO: add debounce in order no to update all edges on every keypress
+      targetElement.outgoers().forEach(outEdge => outEdge.data('from', value));
+      targetElement.incomers().forEach(inEdge => inEdge.data('to', value));
+    }
     this.setState(prevState => ({
-      selectedNodeData: { ...prevState.selectedNodeData, [key]: value }
+      selectedElementData: { ...prevState.selectedElementData, [key]: value }
     }));
   }
 
   handleDeleteAttributeClick(attributeName) {
-    const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
+    const selectedElement = this.cy.getElementById(this.state.selectedElementData.id);
     return () => {
       selectedElement.removeData(attributeName);
-      this.setState({ selectedNodeData: selectedElement.data() });
+      this.setState({ selectedElementData: selectedElement.data() });
     };
   }
 
   handleCreateAttributeClick(name, value) {
-    const selectedElement = this.cy.getElementById(this.state.selectedNodeData.id);
+    const selectedElement = this.cy.getElementById(this.state.selectedElementData.id);
     selectedElement.data(name, value);
     this.setState(prevState => ({
-      selectedNodeData: { ...prevState.selectedNodeData, [name]: value }
+      selectedElementData: { ...prevState.selectedElementData, [name]: value }
     }));
   }
 
@@ -431,15 +464,16 @@ class CytoscapeComponent extends React.Component {
   }
 
   saveProject() {
-    const { projectId, onProjectSave } = this.props;
+    const { project, onProjectSave } = this.props;
+    const { id } = project;
     // Hide edgehandles ('red dots') before saving
     this.edgeHandles.hide();
     const graph = this.cy.json();
-    onProjectSave(projectId, graph);
+    onProjectSave(id, graph);
   }
 
   render() {
-    const { selectedNodeData } = this.state;
+    const { selectedElementData } = this.state;
     return (
       <React.Fragment>
         <div className="container-fluid">
@@ -448,12 +482,12 @@ class CytoscapeComponent extends React.Component {
               className="cytoscape-container col-xs-12"
               ref={ref => (this.editorContainer = ref)}
             />
-            {selectedNodeData && (
+            {selectedElementData && (
               <ElementTooltipContent
                 onAttributeChange={this.handleAttributeChange}
                 onDeleteAttributeClick={this.handleDeleteAttributeClick}
                 onCreateAttributeClick={this.handleCreateAttributeClick}
-                elementAttributes={selectedNodeData}
+                elementAttributes={selectedElementData}
               />
             )}
             <button type="button" onClick={this.handleExportButtonClick}>
@@ -467,8 +501,10 @@ class CytoscapeComponent extends React.Component {
 }
 
 CytoscapeComponent.propTypes = {
-  graph: PropTypes.object.isRequired,
-  projectId: PropTypes.string.isRequired,
+  project: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    graph: PropTypes.object.isRequired
+  }).isRequired,
   onProjectSave: PropTypes.func.isRequired
 };
 

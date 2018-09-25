@@ -6,6 +6,8 @@ const findProjectIndexById = (state, id) =>
 
 export const projects = (state = [], action) => {
   switch (action.type) {
+    case 'SET_INITIAL_STATE':
+      return action.initialState.projects;
     case 'CREATE_PROJECT':
       return [
         ...state,
@@ -37,6 +39,8 @@ export const projects = (state = [], action) => {
 
 export const activeProjectId = (state = null, action) => {
   switch (action.type) {
+    case 'SET_INITIAL_STATE':
+      return action.initialState.activeProjectId;
     case 'SWITCH_PROJECT':
     case 'CREATE_PROJECT':
       return action.id;
