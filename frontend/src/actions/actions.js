@@ -7,8 +7,8 @@ export const createProject = name => ({
   name
 });
 
-export const removeProject = id => ({
-  type: 'REMOVE_PROJECT',
+export const deleteProject = id => ({
+  type: 'DELETE_PROJECT',
   id
 });
 

@@ -59,7 +59,7 @@ describe('reducers', () => {
     expect(projects(stateBefore, action)).toEqual(stateAfter);
   });
 
-  it('should handle REMOVE_PROJECT', () => {
+  it('should handle DELETE_PROJECT', () => {
     const stateBefore = [
       {
         id: 1,
@@ -68,7 +68,7 @@ describe('reducers', () => {
       }
     ];
     const action = {
-      type: 'REMOVE_PROJECT',
+      type: 'DELETE_PROJECT',
       id: 1
     };
     const stateAfter = [];

@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
-import { saveProject } from '../actions/actions';
+import { saveProject, deleteProject } from '../actions/actions';
 import CytoscapeComponent from '../components/CytoscapeComponent';
 
 /**
@@ -13,6 +13,7 @@ class CytoscapeContainer extends React.Component {
     super(props);
 
     this.handleProjectSave = this.handleProjectSave.bind(this);
+    this.handleProjectDelete = this.handleProjectDelete.bind(this);
   }
 
   componentDidMount() {
@@ -30,6 +31,11 @@ class CytoscapeContainer extends React.Component {
     store.dispatch(saveProject(projectId, graph));
   }
 
+  handleProjectDelete(projectId) {
+    const { store } = this.context;
+    store.dispatch(deleteProject(projectId));
+  }
+
   render() {
     const { forwardedRef } = this.props;
     const { store } = this.context;
@@ -41,6 +47,7 @@ class CytoscapeContainer extends React.Component {
       <CytoscapeComponent
         project={activeProject}
         onProjectSave={this.handleProjectSave}
+        onProjectDelete={this.handleProjectDelete}
         ref={forwardedRef}
       />
     );

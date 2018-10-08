@@ -1,8 +1,6 @@
 import { combineReducers } from 'redux';
 
-const findProjectIndexById = (state, id) =>
-  // TODO: solution doesn't work with IE 11
-  state.findIndex(project => project.id === id);
+const findProjectIndexById = (state, id) => state.map(project => project.id).indexOf(id);
 
 export const projects = (state = [], action) => {
   switch (action.type) {
@@ -17,7 +15,7 @@ export const projects = (state = [], action) => {
           graph: {}
         }
       ];
-    case 'REMOVE_PROJECT':
+    case 'DELETE_PROJECT':
       return state.filter(project => project.id !== action.id);
     case 'SAVE_PROJECT': {
       const targetProjectIndex = findProjectIndexById(state, action.id);
@@ -39,6 +37,8 @@ export const projects = (state = [], action) => {
 
 export const activeProjectId = (state = null, action) => {
   switch (action.type) {
+    case 'DELETE_PROJECT':
+      return null;
     case 'SET_INITIAL_STATE':
       return action.initialState.activeProjectId;
     case 'SWITCH_PROJECT':

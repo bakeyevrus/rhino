@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import isEmpty from 'lodash.isempty';
 import $ from 'jquery';
-import random from 'random-name';
+import { Container, Row } from 'reactstrap';
 import cytoscape from 'cytoscape';
 // Extension for zooming user pan
 import panzoom from 'cytoscape-panzoom';
@@ -15,6 +15,7 @@ import './cytoscapeComponent.css';
 import ElementTooltipContent from './ElementTooltipContent';
 import { PRIORITY, ATTRIBUTE_FORM_OPTIONS as OPTIONS } from '../constants';
 import createIdCounter from '../utils/IdCounter';
+import DeleteProjectButton from './DeleteProjectButton';
 
 panzoom(cytoscape);
 contextMenus(cytoscape, $);
@@ -139,6 +140,7 @@ class CytoscapeComponent extends React.Component {
     this.handleCreateAttributeClick = this.handleCreateAttributeClick.bind(this);
     this.handleAttributeChange = this.handleAttributeChange.bind(this);
     this.handleDeleteAttributeClick = this.handleDeleteAttributeClick.bind(this);
+    this.deleteActiveProject = this.deleteActiveProject.bind(this);
   }
 
   componentDidMount() {
@@ -173,6 +175,13 @@ class CytoscapeComponent extends React.Component {
     cy.on('click', this.handleClick);
     cy.json(graph);
     this.cy = cy;
+    // TODO: find out why this doesn't work for normal config
+    this.cy
+      .style()
+      .selector('edge')
+      .style({ label: 'data(name)' })
+      .update();
+    this.cy.userZoomingEnabled(false);
   }
 
   componentWillUnmount() {
@@ -472,30 +481,36 @@ class CytoscapeComponent extends React.Component {
     onProjectSave(id, graph);
   }
 
+  deleteActiveProject() {
+    const { project, onProjectDelete } = this.props;
+    const { id } = project;
+    onProjectDelete(id);
+  }
+
   render() {
     const { selectedElementData } = this.state;
     return (
-      <React.Fragment>
-        <div className="container-fluid">
-          <div className="row">
-            <div
-              className="cytoscape-container col-xs-12"
-              ref={ref => (this.editorContainer = ref)}
+      <Container fluid>
+        <Row>
+          <div className="cytoscape-container" ref={ref => (this.editorContainer = ref)} />
+          {selectedElementData && (
+            <ElementTooltipContent
+              onAttributeChange={this.handleAttributeChange}
+              onDeleteAttributeClick={this.handleDeleteAttributeClick}
+              onCreateAttributeClick={this.handleCreateAttributeClick}
+              elementAttributes={selectedElementData}
             />
-            {selectedElementData && (
-              <ElementTooltipContent
-                onAttributeChange={this.handleAttributeChange}
-                onDeleteAttributeClick={this.handleDeleteAttributeClick}
-                onCreateAttributeClick={this.handleCreateAttributeClick}
-                elementAttributes={selectedElementData}
-              />
-            )}
+          )}
+        </Row>
+        <Row>
+          <div className="cytoscape-footer">
             <button type="button" onClick={this.handleExportButtonClick}>
               Export as JSON
             </button>
+            <DeleteProjectButton onClick={this.deleteActiveProject} />
           </div>
-        </div>
-      </React.Fragment>
+        </Row>
+      </Container>
     );
   }
 }
@@ -505,7 +520,8 @@ CytoscapeComponent.propTypes = {
     id: PropTypes.string.isRequired,
     graph: PropTypes.object.isRequired
   }).isRequired,
-  onProjectSave: PropTypes.func.isRequired
+  onProjectSave: PropTypes.func.isRequired,
+  onProjectDelete: PropTypes.func.isRequired
 };
 
 export default CytoscapeComponent;

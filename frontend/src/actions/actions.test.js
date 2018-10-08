@@ -36,10 +36,10 @@ describe('actions', () => {
   it('should create an action to remove existing project', () => {
     const projectId = mockUuid;
     const expectedAction = {
-      type: 'REMOVE_PROJECT',
+      type: 'DELETE_PROJECT',
       id: projectId
     };
-    expect(actions.removeProject(projectId)).toEqual(expectedAction);
+    expect(actions.deleteProject(projectId)).toEqual(expectedAction);
   });
 
   it('should create an action to change active project', () => {
