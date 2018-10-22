@@ -12,7 +12,7 @@ import contextMenus from 'cytoscape-context-menus';
 import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import edgehandles from 'cytoscape-edgehandles';
 import './cytoscapeComponent.css';
-import ElementTooltipContent from './ElementTooltipContent';
+import ElementTooltip from './ElementTooltip';
 import { PRIORITY, ATTRIBUTE_FORM_OPTIONS as OPTIONS } from '../constants';
 import createIdCounter from '../utils/IdCounter';
 import DeleteProjectButton from './DeleteProjectButton';
@@ -440,7 +440,9 @@ class CytoscapeComponent extends React.Component {
   }
 
   handleAttributeChange(key, value) {
-    const targetElement = this.cy.getElementById(this.state.selectedElementData.id);
+    const { selectedElementData } = this.state;
+    const { id } = selectedElementData;
+    const targetElement = this.cy.getElementById(id);
     targetElement.data(key, value);
     // Update all edges if node name changes
     if (targetElement.isNode() && key === OPTIONS.NAME) {
@@ -453,13 +455,17 @@ class CytoscapeComponent extends React.Component {
   }
 
   validateName(name) {
-    const elements = this.cy.elements(`node[${OPTIONS.NAME} = "${name}"], edge[${OPTIONS.NAME} = "${name}"]`);
+    const elements = this.cy.elements(
+      `node[${OPTIONS.NAME} = "${name}"], edge[${OPTIONS.NAME} = "${name}"]`
+    );
 
     return elements.size() === 0;
   }
 
   handleDeleteAttributeClick(attributeName) {
-    const selectedElement = this.cy.getElementById(this.state.selectedElementData.id);
+    const { selectedElementData } = this.state;
+    const { id } = selectedElementData;
+    const selectedElement = this.cy.getElementById(id);
     return () => {
       selectedElement.removeData(attributeName);
       this.setState({ selectedElementData: selectedElement.data() });
@@ -467,7 +473,9 @@ class CytoscapeComponent extends React.Component {
   }
 
   handleCreateAttributeClick(name, value) {
-    const selectedElement = this.cy.getElementById(this.state.selectedElementData.id);
+    const { selectedElementData } = this.state;
+    const { id } = selectedElementData;
+    const selectedElement = this.cy.getElementById(id);
     selectedElement.data(name, value);
     this.setState(prevState => ({
       selectedElementData: { ...prevState.selectedElementData, [name]: value }
@@ -500,7 +508,7 @@ class CytoscapeComponent extends React.Component {
         <Row>
           <div className="cytoscape-container" ref={ref => (this.editorContainer = ref)} />
           {selectedElementData && (
-            <ElementTooltipContent
+            <ElementTooltip
               onAttributeChange={this.handleAttributeChange}
               validateName={this.validateName}
               onDeleteAttributeClick={this.handleDeleteAttributeClick}

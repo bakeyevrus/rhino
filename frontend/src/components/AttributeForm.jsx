@@ -1,33 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {
+  InputGroup, FormGroup, InputGroupText, InputGroupAddon, Input, Button
+} from 'reactstrap';
 
 function AttributeForm({
   name, value, label, onChange, readOnly, onDeleteClick
 }) {
   const canBeDeleted = onDeleteClick != null;
   return (
-    <div className="input-group mb-2">
-      <div className="input-group-prepend">
-        <span className="input-group-text" id="basic-addon1">
-          {label}
-        </span>
-      </div>
-      <input
-        readOnly={readOnly}
-        type="text"
-        className="form-control"
-        name={name}
-        value={value}
-        onChange={onChange}
-      />
-      {canBeDeleted && (
-        <div className="input-group-append ml-1">
-          <button type="button" className="close" aria-label="Close" onClick={onDeleteClick}>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      )}
-    </div>
+    <FormGroup>
+      <InputGroup>
+        <InputGroupAddon addonType="prepend">
+          <InputGroupText>{label}</InputGroupText>
+        </InputGroupAddon>
+        <Input
+          readOnly={readOnly}
+          type="text"
+          id={`${name}-form`}
+          name={name}
+          value={value}
+          onChange={onChange}
+        />
+        {canBeDeleted && (
+          <InputGroupAddon addonType="append">
+            <InputGroupText>
+              <Button close onClick={onDeleteClick} />
+            </InputGroupText>
+          </InputGroupAddon>
+        )}
+      </InputGroup>
+    </FormGroup>
   );
 }
 

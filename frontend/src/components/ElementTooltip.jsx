@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import map from 'lodash.map';
 import upperFirst from 'lodash.upperfirst';
+import { Container, Row } from 'reactstrap';
 import {
   PRIORITY,
   ATTRIBUTE_FORM_OPTIONS as REQUIRED_ATTRIBUTES,
@@ -10,9 +11,9 @@ import {
 import AttributeForm from './AttributeForm';
 import NameAttributeForm from './NameAttributeForm';
 import CreateAttributeComponent from './CreateAttributeComponent';
-import './elementTooltipContent.css';
+import './elementTooltip.css';
 
-function ElementTooltipContent({
+function ElementTooltip({
   elementAttributes,
   onAttributeChange,
   validateName,
@@ -35,8 +36,8 @@ function ElementTooltipContent({
     .map(attrKey => CUSTOM_ATTRIBUTES[attrKey]);
 
   return (
-    <div className="container-fluid">
-      <div className="row">
+    <Container fluid>
+      <Row>
         <div className="attributes-container">
           <NameAttributeForm
             key={id}
@@ -45,7 +46,7 @@ function ElementTooltipContent({
             onChange={handleFormChange(REQUIRED_ATTRIBUTES.NAME)}
           />
           {/* Priority attribute form */}
-          <div className="input-group mb-2">
+          <div className="input-group mb-3">
             <div className="input-group-prepend">
               <span className="input-group-text" id="basic-addon1">
                 Priority
@@ -100,12 +101,12 @@ function ElementTooltipContent({
             onSaveClick={onCreateAttributeClick}
           />
         </div>
-      </div>
-    </div>
+      </Row>
+    </Container>
   );
 }
 
-ElementTooltipContent.propTypes = {
+ElementTooltip.propTypes = {
   elementAttributes: PropTypes.object.isRequired,
   validateName: PropTypes.func.isRequired,
   onAttributeChange: PropTypes.func.isRequired,
@@ -113,4 +114,4 @@ ElementTooltipContent.propTypes = {
   onCreateAttributeClick: PropTypes.func.isRequired
 };
 
-export default ElementTooltipContent;
+export default ElementTooltip;
