@@ -141,6 +141,7 @@ class CytoscapeComponent extends React.Component {
     this.handleAttributeChange = this.handleAttributeChange.bind(this);
     this.handleDeleteAttributeClick = this.handleDeleteAttributeClick.bind(this);
     this.deleteActiveProject = this.deleteActiveProject.bind(this);
+    this.validateName = this.validateName.bind(this);
   }
 
   componentDidMount() {
@@ -443,13 +444,18 @@ class CytoscapeComponent extends React.Component {
     targetElement.data(key, value);
     // Update all edges if node name changes
     if (targetElement.isNode() && key === OPTIONS.NAME) {
-      // TODO: add debounce in order no to update all edges on every keypress
-      targetElement.outgoers().forEach(outEdge => outEdge.data('from', value));
-      targetElement.incomers().forEach(inEdge => inEdge.data('to', value));
+      targetElement.outgoers('edge').forEach(outEdge => outEdge.data(OPTIONS.FROM, value));
+      targetElement.incomers('edge').forEach(inEdge => inEdge.data(OPTIONS.TO, value));
     }
     this.setState(prevState => ({
       selectedElementData: { ...prevState.selectedElementData, [key]: value }
     }));
+  }
+
+  validateName(name) {
+    const elements = this.cy.elements(`node[${OPTIONS.NAME} = "${name}"], edge[${OPTIONS.NAME} = "${name}"]`);
+
+    return elements.size() === 0;
   }
 
   handleDeleteAttributeClick(attributeName) {
@@ -496,6 +502,7 @@ class CytoscapeComponent extends React.Component {
           {selectedElementData && (
             <ElementTooltipContent
               onAttributeChange={this.handleAttributeChange}
+              validateName={this.validateName}
               onDeleteAttributeClick={this.handleDeleteAttributeClick}
               onCreateAttributeClick={this.handleCreateAttributeClick}
               elementAttributes={selectedElementData}

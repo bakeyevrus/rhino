@@ -8,12 +8,14 @@ import {
   ATTRIBUTE_FORM_CUSTOM_OPTIONS as CUSTOM_ATTRIBUTES
 } from '../constants';
 import AttributeForm from './AttributeForm';
+import NameAttributeForm from './NameAttributeForm';
 import CreateAttributeComponent from './CreateAttributeComponent';
 import './elementTooltipContent.css';
 
 function ElementTooltipContent({
   elementAttributes,
   onAttributeChange,
+  validateName,
   onCreateAttributeClick,
   onDeleteAttributeClick
 }) {
@@ -22,7 +24,7 @@ function ElementTooltipContent({
     onAttributeChange(key, newValue);
   };
   const {
-    name, priority, from, to
+    id, name, priority, from, to
   } = elementAttributes;
 
   const elementCustomAttributes = Object.keys(CUSTOM_ATTRIBUTES)
@@ -36,11 +38,10 @@ function ElementTooltipContent({
     <div className="container-fluid">
       <div className="row">
         <div className="attributes-container">
-          {/* Name attribute form */}
-          <AttributeForm
-            name="name-form"
+          <NameAttributeForm
+            key={id}
             value={name}
-            label="Name"
+            validate={validateName}
             onChange={handleFormChange(REQUIRED_ATTRIBUTES.NAME)}
           />
           {/* Priority attribute form */}
@@ -106,6 +107,7 @@ function ElementTooltipContent({
 
 ElementTooltipContent.propTypes = {
   elementAttributes: PropTypes.object.isRequired,
+  validateName: PropTypes.func.isRequired,
   onAttributeChange: PropTypes.func.isRequired,
   onDeleteAttributeClick: PropTypes.func.isRequired,
   onCreateAttributeClick: PropTypes.func.isRequired
