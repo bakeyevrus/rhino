@@ -181,6 +181,12 @@ class CytoscapeComponent extends React.Component {
       .style()
       .selector('edge')
       .style({ label: 'data(name)' })
+      .selector(`*:unselected[priority = '${PRIORITY.LOW}']`)
+      .style({ 'background-color': '#69d052', 'line-color': '#69d052' })
+      .selector(`*:unselected[priority = '${PRIORITY.MEDIUM}']`)
+      .style({ 'background-color': '#ffc905', 'line-color': '#ffc905' })
+      .selector(`*:unselected[priority = '${PRIORITY.HIGH}']`)
+      .style({ 'background-color': '#ff4545', 'line-color': '#ff4545' })
       .update();
     this.cy.userZoomingEnabled(false);
   }
