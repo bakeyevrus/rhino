@@ -5,7 +5,6 @@ const createIdCounter = (
   let letters = startLetter;
   let numbers = startNumber;
 
-  const currentLetter = () => letters;
   const nextLetter = () => {
     const getNextKey = (key) => {
       if (key === 'Z' || key === 'z') {
@@ -29,7 +28,6 @@ const createIdCounter = (
     return letters;
   };
 
-  const currentNumber = () => numbers;
   const nextNumber = () => {
     const getNextKey = (key) => {
       if (key === '9') {
@@ -50,11 +48,19 @@ const createIdCounter = (
     return numbers;
   };
 
+  const currentLetter = () => letters;
+  const currentNumber = () => numbers;
+  const reset = () => {
+    letters = startLetter;
+    numbers = startNumber;
+  };
+
   return {
     currentLetter,
     currentNumber,
     nextLetter,
-    nextNumber
+    nextNumber,
+    reset
   };
 };
 

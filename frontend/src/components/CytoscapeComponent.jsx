@@ -146,8 +146,8 @@ class CytoscapeComponent extends React.Component {
 
   componentDidMount() {
     const { project } = this.props;
-    const { graph, lastNodeId, lastEdgeId } = project;
-    this.counter = createIdCounter(lastNodeId, lastEdgeId);
+    const { graph } = project;
+    this.counter = createIdCounter();
     this.initialize(graph, this.editorContainer);
   }
 
@@ -156,7 +156,7 @@ class CytoscapeComponent extends React.Component {
     // Re-render cytoscape container only in case if graph has been changed
     if (project !== prevProps.project) {
       const { graph } = project;
-      this.counter = createIdCounter();
+      this.counter.reset();
       if (isEmpty(graph)) {
         // Clear the elements in graph, leave the config
         this.cy.json({ elements: {} });
@@ -172,7 +172,7 @@ class CytoscapeComponent extends React.Component {
     const cy = cytoscape(cyConfig);
     this.panzoom = cy.panzoom(zoomDefaults);
     this.menu = cy.contextMenus(this.getContextMenuConfig());
-    this.edgeHandles = cy.edgehandles(this.getEdgehanadlesConfig(this.counter, cy));
+    this.edgeHandles = cy.edgehandles(this.getEdgehandlesConfig(this.counter, cy));
     cy.on('click', this.handleClick);
     cy.json(graph);
     this.cy = cy;
@@ -309,7 +309,7 @@ class CytoscapeComponent extends React.Component {
     return menuOptions;
   }
 
-  getEdgehanadlesConfig(counter, cy) {
+  getEdgehandlesConfig(counter, cy) {
     // the default values of each option are outlined below:
     const defaults = {
       preview: true, // whether to show added edges preview before releasing selection
@@ -362,8 +362,7 @@ class CytoscapeComponent extends React.Component {
         // fired when edgehandles is done and elements are added
         let name = counter.nextNumber();
         const isNameValid = (cy, edgeName) => {
-          const result = cy.filter(`[name = '${edgeName}']`);
-          console.log(cy.json());
+          const result = cy.filter(`[name = "${edgeName}"]`);
           return result.size() === 0;
         };
         while (!isNameValid(cy, name)) {
