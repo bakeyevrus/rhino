@@ -23,8 +23,10 @@ public class UserService implements ReactiveUserDetailsService {
         this.jwtUtil = jwtUtil;
     }
 
-    public Mono<User> register(User user) {
-        return userRepo.save(user);
+    public Mono<String> register(User user) {
+        return userRepo.save(user)
+                .map(User::toUserDetails)
+                .map(jwtUtil::generateToken);
     }
 
     public Mono<String> login(String username, String password) {

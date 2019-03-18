@@ -1,14 +1,15 @@
 package cz.cvut.fel.bakeyevrus.rhino.handler;
 
 import cz.cvut.fel.bakeyevrus.rhino.dto.ErrorResponseDto;
+import cz.cvut.fel.bakeyevrus.rhino.dto.UserAuthResponseDto;
 import cz.cvut.fel.bakeyevrus.rhino.dto.UserLoginRequestDto;
-import cz.cvut.fel.bakeyevrus.rhino.dto.UserLoginResponseDto;
 import cz.cvut.fel.bakeyevrus.rhino.dto.UserRegisterRequestDto;
 import cz.cvut.fel.bakeyevrus.rhino.mapper.UserMapper;
 import cz.cvut.fel.bakeyevrus.rhino.service.UserService;
 import cz.cvut.fel.bakeyevrus.rhino.util.PasswordDecoder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -16,7 +17,13 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
+/*
+ * TODO:
+ * consider creating error handling layer which converts all business and dao exceptions into one type in order
+ * to abstract controller from lower level errors.
+ * See: https://dzone.com/articles/quotdecouplingquot-the-exception-puzzle
+ */
+
 
 @Log4j2
 @Component
@@ -39,27 +46,29 @@ public class UserHandler {
                 .doOnNext(userDto -> validator.validate(userDto))
                 .map(mapper::toUser)
                 .flatMap(userService::register)
-                .flatMap(savedUser ->
-                        ServerResponse
-                                .created(URI.create("http://localhost:8080/api/v1/user/" + savedUser.getId()))
-                                .syncBody(savedUser)
-                )
+                .map(UserAuthResponseDto::new)
+                .flatMap(authResponse -> ServerResponse.ok().syncBody(authResponse))
                 .onErrorResume(
-                        throwable -> throwable instanceof ServerWebInputException,
+                        ServerWebInputException.class,
                         (err) -> {
                             log.info(err.getMessage());
                             return ServerResponse.badRequest().build();
                         }
+                )
+                .onErrorResume(
+                        DuplicateKeyException.class,
+                        (err) -> ServerResponse.unprocessableEntity()
+                                .syncBody(new ErrorResponseDto("Entered email already exists in database"))
                 );
     }
 
     public Mono<ServerResponse> login(ServerRequest request) {
 
-        Mono<UserLoginResponseDto> response = request
+        Mono<UserAuthResponseDto> response = request
                 .bodyToMono(UserLoginRequestDto.class)
                 .doOnNext(userCred -> validator.validate(userCred))
                 .flatMap(userCred -> userService.login(userCred.getEmail(), PasswordDecoder.base64Decode(userCred.getPassword())))
-                .map(UserLoginResponseDto::new);
+                .map(UserAuthResponseDto::new);
 
         return response
                 .flatMap(loginResponse -> ServerResponse.ok().syncBody(loginResponse))
