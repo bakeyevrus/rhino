@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
+import { auth } from './auth.reducer';
 
 const findProjectIndexById = (state, id) => state.map(project => project.id).indexOf(id);
 
-export const projects = (state = [], action) => {
+const projects = (state = [], action) => {
   switch (action.type) {
     case 'SET_INITIAL_STATE':
       return action.initialState.projects;
@@ -35,7 +36,7 @@ export const projects = (state = [], action) => {
   }
 };
 
-export const activeProjectId = (state = null, action) => {
+const activeProjectId = (state = null, action) => {
   switch (action.type) {
     case 'DELETE_PROJECT':
       return null;
@@ -51,5 +52,8 @@ export const activeProjectId = (state = null, action) => {
 
 export const rootReducer = combineReducers({
   projects,
-  activeProjectId
+  activeProjectId,
+  auth
 });
+
+export default rootReducer;
