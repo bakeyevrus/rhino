@@ -3,7 +3,6 @@ package cz.cvut.fel.bakeyevrus.rhino.service;
 import cz.cvut.fel.bakeyevrus.rhino.model.User;
 import cz.cvut.fel.bakeyevrus.rhino.repository.UserRepository;
 import cz.cvut.fel.bakeyevrus.rhino.security.JwtUtil;
-import io.jsonwebtoken.Jwt;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;

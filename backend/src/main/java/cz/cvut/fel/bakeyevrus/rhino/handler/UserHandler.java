@@ -1,10 +1,12 @@
 package cz.cvut.fel.bakeyevrus.rhino.handler;
 
+import cz.cvut.fel.bakeyevrus.rhino.dto.ErrorResponseDto;
 import cz.cvut.fel.bakeyevrus.rhino.dto.UserLoginRequestDto;
 import cz.cvut.fel.bakeyevrus.rhino.dto.UserLoginResponseDto;
 import cz.cvut.fel.bakeyevrus.rhino.dto.UserRegisterRequestDto;
 import cz.cvut.fel.bakeyevrus.rhino.mapper.UserMapper;
 import cz.cvut.fel.bakeyevrus.rhino.service.UserService;
+import cz.cvut.fel.bakeyevrus.rhino.util.PasswordDecoder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,14 +58,14 @@ public class UserHandler {
         Mono<UserLoginResponseDto> response = request
                 .bodyToMono(UserLoginRequestDto.class)
                 .doOnNext(userCred -> validator.validate(userCred))
-                .flatMap(userCred -> userService.login(userCred.getEmail(), userCred.getPassword()))
+                .flatMap(userCred -> userService.login(userCred.getEmail(), PasswordDecoder.base64Decode(userCred.getPassword())))
                 .map(UserLoginResponseDto::new);
 
         return response
                 .flatMap(loginResponse -> ServerResponse.ok().syncBody(loginResponse))
                 .switchIfEmpty(
                         ServerResponse.status(HttpStatus.UNAUTHORIZED)
-                                .body(Mono.just("Invalid credentials provided"), String.class))
+                                .syncBody(new ErrorResponseDto("Invalid credentials provided")))
                 .onErrorResume(
                         throwable -> throwable instanceof ServerWebInputException,
                         (err) -> {
