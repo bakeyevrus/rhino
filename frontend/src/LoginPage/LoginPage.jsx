@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Container, Row, Col } from 'reactstrap';
+import {
+  Container, Row, Col, Alert
+} from 'reactstrap';
 import { authActions } from '../actions';
 import LoginCard from './LoginCard';
 import SignupCard from './SignupCard';
 
 class LoginPage extends Component {
   static defaultProps = {
-    authenticating: false
+    authenticating: false,
+    errMessage: null
   };
 
   state = {
@@ -68,10 +71,17 @@ class LoginPage extends Component {
 
   render() {
     const { loginForm, signupForm } = this.state;
-    const { authenticating } = this.props;
+    const { authenticating, errMessage } = this.props;
 
     return (
       <Container fluid>
+        <Row>
+          <Col>
+            <Alert color="danger" isOpen={errMessage != null} fade={false}>
+              {errMessage}
+            </Alert>
+          </Col>
+        </Row>
         <Row>
           <Col xs={8} sm={6}>
             <LoginCard
@@ -102,12 +112,15 @@ class LoginPage extends Component {
 LoginPage.propTypes = {
   login: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
-  authenticating: PropTypes.bool
+  authenticating: PropTypes.bool,
+  errMessage: PropTypes.string
 };
 
 function mapStateToProps(state) {
+  const { authenticating, errMessage } = state.auth;
   return {
-    ...state.auth
+    authenticating,
+    errMessage
   };
 }
 
