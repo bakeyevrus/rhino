@@ -8,7 +8,8 @@
     "no-use-before-define": [
       "error",
       { "functions": false, "classes": true, "variables": true }
-    ]
+    ],
+    "linebreak-style": "off"
   },
   "env": {
     "jest": true,

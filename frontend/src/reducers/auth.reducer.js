@@ -12,8 +12,7 @@ export const auth = (state = initialState, action) => {
       return {
         ...state,
         authenticating: true,
-        loggedIn: false,
-        errMessage: null
+        loggedIn: false
       };
     case 'AUTH_SUCCESS':
       return {
