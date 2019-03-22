@@ -74,7 +74,7 @@ class LoginPage extends Component {
     const { authenticating, errMessage } = this.props;
 
     return (
-      <Container fluid>
+      <Container className="auth-container pt-3" fluid>
         <Row>
           <Col>
             <Alert color="danger" isOpen={errMessage != null} fade={false}>
