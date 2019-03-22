@@ -1,0 +1,16 @@
+.dropdown-item.noactive:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+.dropdown-item > .dropdown-item-desc {
+  display: block;
+  padding-top: 0;
+  font-size: 75%;
+  color: #6c757d;
+  white-space: normal;
+}
+
+.dropdown-button-toolbar {
+  padding: 0.25rem 1.5rem;
+}
