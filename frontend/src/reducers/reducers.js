@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
-import { auth } from './auth.reducer';
+import auth from './auth.reducer';
+import modal from './modal.reducer';
+import editorProject, * as fromProjects from './project.reducer';
 
 const findProjectIndexById = (state, id) => state.map(project => project.id).indexOf(id);
 
@@ -44,16 +46,27 @@ const activeProjectId = (state = null, action) => {
       return action.initialState.activeProjectId;
     case 'SWITCH_PROJECT':
     case 'CREATE_PROJECT':
-      return action.id;
+      return action.id || null;
     default:
       return state;
   }
 };
 
-export const rootReducer = combineReducers({
+const rootReducer = combineReducers({
   projects,
   activeProjectId,
-  auth
+  project: editorProject,
+  auth,
+  modal
 });
 
 export default rootReducer;
+
+export const isLoggedIn = state => state.auth.loggedIn;
+
+// Projects
+export const getProjectList = state => fromProjects.getProjectList(state.project);
+export const isProjectLoading = state => fromProjects.isLoading(state.project);
+export const getActiveProjectId = state => fromProjects.getActiveProjectId(state.project);
+export const getProjectById = (state, id) => fromProjects.getProjectById(state.project, id);
+export const getErrorMessage = state => fromProjects.getErrorMessage(state.project);

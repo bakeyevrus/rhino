@@ -1,21 +1,37 @@
 import React from 'react';
-import { Switch, Route } from 'react-router';
-import App from './App';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Switch, Route, Redirect } from 'react-router';
 import { AppBar } from './AppBar';
 import LoginPage from '../LoginPage';
+import EditorPage from '../EditorPage';
+import Modal from './Modals';
+import { isLoggedIn } from '../reducers';
 
-function Root() {
+Root.propTypes = {
+  loggedIn: PropTypes.bool.isRequired
+};
+
+function Root({ loggedIn: tempNotUsed }) {
+  const loggedIn = true;
   return (
     <>
-      <AppBar loggedIn />
+      <AppBar loggedIn={loggedIn} />
       <Switch>
         {/* TODO: extract endpoints to constants */}
-        <Route exact path="/" component={null} />
         <Route path="/auth" component={LoginPage} />
-        <Route path="/editor" component={App} />
+        <Route path="/editor" component={EditorPage} />
+        <Redirect to="/auth" />
       </Switch>
+      <Modal />
     </>
   );
 }
 
-export default Root;
+function mapStateToProps(state) {
+  return {
+    loggedIn: isLoggedIn(state)
+  };
+}
+
+export default connect(mapStateToProps)(Root);

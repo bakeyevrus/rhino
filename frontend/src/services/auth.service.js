@@ -47,7 +47,7 @@ function handleError(err) {
   throw errMsg;
 }
 
-export const authService = {
+const authService = {
   login,
   logout,
   register
