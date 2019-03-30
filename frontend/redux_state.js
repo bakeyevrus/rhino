@@ -26,11 +26,14 @@ const stateExample = {
   modal: {
     // ...modalProps
   },
-  activeProjectId: 'prj1',
   activeGraphId: 'graph2',
   projects: {
-    prj1: { id: 'prj1', name: 'Project1' },
-    prj2: { id: 'prj2', name: 'Project2' }
+    requestPending: false,
+    activeProjectId: 'prj1',
+    byId: {
+      prj1: { id: 'prj1', name: 'Project1' },
+      prj2: { id: 'prj2', name: 'Project2' }
+    }
   },
   // Graphs are bounded to active(!) project
   graphs: {

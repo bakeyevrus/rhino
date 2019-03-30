@@ -4,7 +4,7 @@ import { DropdownItem, Button } from 'reactstrap';
 import './projectTab.css';
 
 function ProjectTab({
-  name, active, description, onSelectClick, onEditClick, onDeleteClick
+  id, name, active, description, onSelectClick, onEditClick, onDeleteClick
 }) {
   return (
     <>
@@ -12,22 +12,37 @@ function ProjectTab({
       <DropdownItem
         disabled={active}
         className="noactive"
-        onClick={active ? undefined : onSelectClick}
+        onClick={active ? undefined : handleSelectClick}
       >
         {name}
         {renderProjectDescription()}
       </DropdownItem>
       <div className="dropdown-button-toolbar">
-        <Button outline color="primary" size="sm" onClick={onEditClick}>
+        <Button outline color="primary" size="sm" onClick={handleEditClick}>
           Edit
         </Button>
-        <Button outline color="danger" size="sm" className="ml-2" onClick={onDeleteClick}>
+        <Button outline color="danger" size="sm" className="ml-2" onClick={handleDeleteClick}>
           Delete
         </Button>
       </div>
       <DropdownItem divider />
     </>
   );
+
+  function handleSelectClick(event) {
+    event.preventDefault();
+    onSelectClick(id);
+  }
+
+  function handleDeleteClick(event) {
+    event.preventDefault();
+    onDeleteClick(id, name);
+  }
+
+  function handleEditClick(event) {
+    event.preventDefault();
+    onEditClick({ id, name, description });
+  }
 
   function renderProjectDescription() {
     if (description == null) {
@@ -44,6 +59,7 @@ ProjectTab.defaultProps = {
 };
 
 ProjectTab.propTypes = {
+  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onSelectClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,

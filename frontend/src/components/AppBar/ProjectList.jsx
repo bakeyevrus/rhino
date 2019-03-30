@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -7,20 +7,48 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  Button
+  Button,
+  Spinner
 } from 'reactstrap';
 import ProjectTab from './ProjectTab';
+import { modalActions, projectActions } from '../../actions';
+import { modalTypes } from '../../const';
+import { getProjectList, isProjectLoading, getActiveProjectId } from '../../reducers';
+
+ProjectList.propTypes = {
+  projects: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      active: PropTypes.bool.isRequired,
+      description: PropTypes.string
+    })
+  ).isRequired,
+  getProjects: PropTypes.func.isRequired,
+  openCreateProjectModal: PropTypes.func.isRequired,
+  openUpdateProjectModal: PropTypes.func.isRequired,
+  deleteProject: PropTypes.func.isRequired,
+  selectProject: PropTypes.func.isRequired,
+  loading: PropTypes.bool
+};
+
+ProjectList.defaultProps = {
+  loading: false
+};
 
 // TODO: make overflow:scroll if there are a lot of projects created
-
 function ProjectList({
   projects,
-  activeProjectId,
-  createProject,
+  getProjects,
+  openCreateProjectModal,
+  openUpdateProjectModal,
   deleteProject,
   selectProject,
-  editProject
+  loading
 }) {
+  useEffect(() => {
+    getProjects();
+  }, [getProjects]);
   return (
     <Nav navbar>
       <UncontrolledDropdown nav inNavbar>
@@ -28,7 +56,7 @@ function ProjectList({
         <DropdownMenu>{renderProjectTabs()}</DropdownMenu>
       </UncontrolledDropdown>
       <NavItem className="ml-3">
-        <Button color="success" onClick={createProject}>
+        <Button color="success" onClick={openCreateProjectModal}>
           New Project
         </Button>
       </NavItem>
@@ -36,59 +64,81 @@ function ProjectList({
   );
 
   function renderProjectTabs() {
-    const { [activeProjectId]: activeProject, ...restProjects } = projects;
+    if (loading) {
+      return (
+        <div className="d-flex justify-content-center m-2">
+          <Spinner color="primary" />
+        </div>
+      );
+    }
+
     return (
       <>
-        {activeProject && renderProjectTab(activeProject, true)}
-        {Object.values(restProjects).map(project => renderProjectTab(project, false))}
+        {projects.map(project => (
+          <ProjectTab
+            active={project.active}
+            key={project.id}
+            id={project.id}
+            name={project.name}
+            description={project.description}
+            onSelectClick={selectProject}
+            onEditClick={openUpdateProjectModal}
+            onDeleteClick={deleteProject}
+          />
+        ))}
       </>
     );
   }
-
-  function renderProjectTab(project, active) {
-    return (
-      <ProjectTab
-        active={active}
-        key={project.id}
-        name={project.name}
-        description={project.description}
-        onSelectClick={selectProject}
-        onEditClick={editProject}
-        onDeleteClick={deleteProject(project.id)}
-      />
-    );
-  }
 }
 
-ProjectList.defaultProps = {
-  activeProjectId: null
-};
-
-ProjectList.propTypes = {
-  projects: PropTypes.objectOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
-    })
-  ).isRequired,
-  createProject: PropTypes.func.isRequired,
-  deleteProject: PropTypes.func.isRequired,
-  selectProject: PropTypes.func.isRequired,
-  editProject: PropTypes.func.isRequired,
-  activeProjectId: PropTypes.string
-};
-
 function mapStateToProps(state) {
-  return {};
+  return {
+    projects: getProjectList(state),
+    activeProjectId: getActiveProjectId(state),
+    loading: isProjectLoading(state)
+  };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {
-    createProject: () => {},
-    editProject: () => {},
-    selectProject: () => {},
-    deleteProject: projectId => () => {}
+  /**
+   * Extracts `modalType` and `modalProps` params from `actionPayload`
+   * and dispatches `showModal` action
+   * @param {Object} actionPayload
+   */
+  const dispatchOpenModal = (actionPayload) => {
+    const { modalType, modalProps } = actionPayload;
+    dispatch(modalActions.showModal(modalType, modalProps));
   };
+  // TODO: find better way how to deal with modals
+  return {
+    getProjects: () => dispatch(projectActions.fetchProjectList()),
+    selectProject: id => dispatch(projectActions.fetchProject(id)),
+    openCreateProjectModal: () => dispatchOpenModal({ modalType: modalTypes.PROJECT }),
+    openUpdateProjectModal: projectToUpdate => dispatchOpenModal({
+      modalType: modalTypes.PROJECT,
+      modalProps: {
+        // Specify key, because ProjectModal is copying props to state
+        // See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
+        key: projectToUpdate.id,
+        project: projectToUpdate
+      }
+    }),
+    deleteProject: (id, name) => dispatchOpenModal(deleteProjectActionPayload(id, name))
+  };
+
+  function deleteProjectActionPayload(id, name) {
+    const modalType = modalTypes.ALERT;
+    const modalProps = {
+      title: 'Warning!',
+      message: `Are you sure to delete project ${name}?`,
+      onSubmitClick: () => dispatch(projectActions.deleteProject(id))
+    };
+
+    return {
+      modalType,
+      modalProps
+    };
+  }
 }
 
 export default connect(
