@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "parser": "babel-eslint",
+  "plugins": ["react-hooks"],
   "rules": {
     "import/no-extraneous-dependencies": "[error, { devDependencies: true }]",
     "comma-dangle": ["error", "never"],
@@ -9,7 +10,9 @@
       "error",
       { "functions": false, "classes": true, "variables": true }
     ],
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "env": {
     "jest": true,
