@@ -1,8 +1,13 @@
 import { authService } from '../services';
+import { authActionTypes } from '../const';
 
-const authRequest = () => ({ type: 'AUTH_REQUEST' });
-const authSuccess = token => ({ type: 'AUTH_SUCCESS', token });
-const authError = errMsg => ({ type: 'AUTH_ERROR', errMsg });
+const {
+  AUTH_REQUEST, AUTH_SUCCESS, AUTH_ERROR, AUTH_LOGOUT
+} = authActionTypes;
+
+const authRequest = () => ({ type: AUTH_REQUEST });
+const authSuccess = token => ({ type: AUTH_SUCCESS, token });
+const authError = errMsg => ({ type: AUTH_ERROR, errMsg: errMsg || 'Sorry, something went wrong' });
 
 const login = (email, password) => (dispatch) => {
   dispatch(authRequest());
@@ -14,7 +19,7 @@ const login = (email, password) => (dispatch) => {
 const logout = () => {
   authService.logout();
   return {
-    type: 'AUTH_LOGOUT'
+    type: AUTH_LOGOUT
   };
 };
 
