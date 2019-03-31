@@ -1,31 +1,25 @@
+import editorState, {
+  findProjectById,
+  removeProject,
+  addProject,
+  setActiveProject,
+  mutateProject
+} from './mockState';
+
 const projectService = {
-  fetchProjectList,
   fetchProject,
   createProject,
   updateProject,
   deleteProject
 };
 
-const projects = {
-  byId: {
-    1: {
-      id: '1',
-      name: 'I am super long project name in order to break markdown',
-      description: 'I am super much more longer project description in order to break markdown'
-    },
-    2: { id: '2', name: 'World' },
-    3: {
-      id: '3',
-      name: 'I am super long project name in order to break markdown',
-      description:
-        'I am super-super much more longer project description in order to break markdown'
-    }
-  },
-  activeProjectId: '2'
-};
-
 function timeout(seconds) {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log('Server state: ', editorState);
+      resolve();
+    }, seconds * 1000);
+  });
 }
 
 function generateId() {
@@ -46,13 +40,13 @@ function deleteProject(id) {
   }
 
   return timeout(2).then(() => {
-    const projectToDelete = projects.byId[id];
+    const projectToDelete = findProjectById(id);
     if (projectToDelete == null) {
       throw new Error("Provided ID doesn't exist in DB");
     }
-    delete projects.byId[id];
-    if (id === projects.activeProjectId) {
-      projects.activeProjectId = null;
+    removeProject(id);
+    if (id === editorState.activeProjectId) {
+      setActiveProject(null);
     }
     return projectToDelete;
   });
@@ -70,7 +64,7 @@ function createProject(project) {
       id
     };
 
-    projects.byId[id] = createdProject;
+    addProject(createdProject);
 
     return createdProject;
   });
@@ -82,11 +76,11 @@ function fetchProject(projectId) {
   }
 
   return timeout(2).then(() => {
-    const targetProject = projects.byId[projectId];
+    const targetProject = findProjectById(projectId);
     if (targetProject == null) {
       throw new Error(`Project with id ${projectId} hasn't been found`);
     }
-    projects.activeProjectId = projectId;
+    setActiveProject(projectId);
 
     return targetProject;
   });
@@ -99,19 +93,14 @@ function updateProject(updatedProject) {
 
   return timeout(2).then(() => {
     const { id } = updatedProject;
-    if (projects.byId[id] == null) {
+    const targetProject = findProjectById(id);
+    if (targetProject == null) {
       throw new Error(`Project with id ${id} hasn't been found`);
     }
-    projects.byId[id] = {
-      ...updatedProject
-    };
+    mutateProject(updatedProject);
 
     return updatedProject;
   });
-}
-
-function fetchProjectList() {
-  return timeout(2).then(() => projects);
 }
 
 export default projectService;

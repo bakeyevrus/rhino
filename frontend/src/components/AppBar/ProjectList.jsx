@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -24,7 +24,6 @@ ProjectList.propTypes = {
       description: PropTypes.string
     })
   ).isRequired,
-  getProjects: PropTypes.func.isRequired,
   openCreateProjectModal: PropTypes.func.isRequired,
   openUpdateProjectModal: PropTypes.func.isRequired,
   deleteProject: PropTypes.func.isRequired,
@@ -39,16 +38,12 @@ ProjectList.defaultProps = {
 // TODO: make overflow:scroll if there are a lot of projects created
 function ProjectList({
   projects,
-  getProjects,
   openCreateProjectModal,
   openUpdateProjectModal,
   deleteProject,
   selectProject,
   loading
 }) {
-  useEffect(() => {
-    getProjects();
-  }, [getProjects]);
   return (
     <Nav navbar>
       <UncontrolledDropdown nav inNavbar>
@@ -111,7 +106,6 @@ function mapDispatchToProps(dispatch) {
   };
   // TODO: find better way how to deal with modals
   return {
-    getProjects: () => dispatch(projectActions.fetchProjectList()),
     selectProject: id => dispatch(projectActions.fetchProject(id)),
     openCreateProjectModal: () => dispatchOpenModal({ modalType: modalTypes.PROJECT }),
     openUpdateProjectModal: projectToUpdate => dispatchOpenModal({
