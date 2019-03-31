@@ -5,6 +5,7 @@ import {
   Container, Row, Col, Alert
 } from 'reactstrap';
 import { authActions } from '../actions';
+import AppBar from '../components/AppBar';
 import LoginCard from './LoginCard';
 import SignupCard from './SignupCard';
 
@@ -14,18 +15,25 @@ class LoginPage extends Component {
     errMessage: null
   };
 
-  state = {
-    loginForm: {
-      email: '',
-      password: ''
-    },
-    signupForm: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: ''
-    }
-  };
+  constructor(props) {
+    super(props);
+
+    // Reset login status
+    props.logout();
+
+    this.state = {
+      loginForm: {
+        email: '',
+        password: ''
+      },
+      signupForm: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: ''
+      }
+    };
+  }
 
   handleLoginChange = (event) => {
     const { name, value } = event.currentTarget;
@@ -74,43 +82,47 @@ class LoginPage extends Component {
     const { authenticating, errMessage } = this.props;
 
     return (
-      <Container className="auth-container pt-3" fluid>
-        <Row>
-          <Col>
-            <Alert color="danger" isOpen={errMessage != null} fade={false}>
-              {errMessage}
-            </Alert>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={8} sm={6}>
-            <LoginCard
-              authenticating={authenticating}
-              email={loginForm.email}
-              password={loginForm.password}
-              onChange={this.handleLoginChange}
-              onSubmit={this.handleLoginSubmit}
-            />
-          </Col>
-          <Col xs={8} sm={6}>
-            <SignupCard
-              authenticating={authenticating}
-              firstName={signupForm.firstName}
-              lastName={signupForm.lastName}
-              email={signupForm.email}
-              password={signupForm.password}
-              onChange={this.handleSignupChange}
-              onSubmit={this.handleSignupSubmit}
-            />
-          </Col>
-        </Row>
-      </Container>
+      <>
+        <AppBar loggedIn={false} />
+        <Container className="auth-container pt-3" fluid>
+          <Row>
+            <Col>
+              <Alert color="danger" isOpen={errMessage != null} fade={false}>
+                {errMessage}
+              </Alert>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={8} sm={6}>
+              <LoginCard
+                authenticating={authenticating}
+                email={loginForm.email}
+                password={loginForm.password}
+                onChange={this.handleLoginChange}
+                onSubmit={this.handleLoginSubmit}
+              />
+            </Col>
+            <Col xs={8} sm={6}>
+              <SignupCard
+                authenticating={authenticating}
+                firstName={signupForm.firstName}
+                lastName={signupForm.lastName}
+                email={signupForm.email}
+                password={signupForm.password}
+                onChange={this.handleSignupChange}
+                onSubmit={this.handleSignupSubmit}
+              />
+            </Col>
+          </Row>
+        </Container>
+      </>
     );
   }
 }
 
 LoginPage.propTypes = {
   login: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
   authenticating: PropTypes.bool,
   errMessage: PropTypes.string
@@ -124,10 +136,12 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, ownProps) {
+  const { history } = ownProps;
   return {
-    login: (email, password) => dispatch(authActions.login(email, password)),
-    register: user => dispatch(authActions.register(user))
+    login: (email, password) => dispatch(authActions.login(email, password, history)),
+    logout: () => dispatch(authActions.logout()),
+    register: user => dispatch(authActions.register(user, history))
   };
 }
 

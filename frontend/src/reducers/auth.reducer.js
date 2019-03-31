@@ -52,3 +52,5 @@ const auth = combineReducers({
 });
 
 export default auth;
+
+export const isLoggedIn = state => state.loggedIn;
