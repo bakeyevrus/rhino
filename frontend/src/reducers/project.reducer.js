@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { projectActionTypes as actions } from '../const';
+import { projectActionTypes as projectActions, editorActionTypes as editorActions } from '../const';
 import createLoaderReducer from './loader.reducer';
 import createErrorMessageReducer from './error.reducer';
 
@@ -9,7 +9,9 @@ const {
   CREATE_PROJECT,
   UPDATE_PROJECT,
   DELETE_PROJECT
-} = actions;
+} = projectActions;
+
+const { FETCH_EDITOR_STATE } = editorActions;
 
 function byId(state = {}, action) {
   switch (action.type) {
@@ -29,6 +31,10 @@ function byId(state = {}, action) {
       delete newState[action.id];
       return newState;
     }
+    case FETCH_EDITOR_STATE:
+      return {
+        ...action.response.entities.projects
+      };
     default:
       return state;
   }
@@ -43,13 +49,15 @@ function activeProjectId(state = null, action) {
       return action.project.id;
     case DELETE_PROJECT:
       return state === action.id ? null : state;
+    case FETCH_EDITOR_STATE:
+      return action.response.result.activeProjectId;
     default:
       return state;
   }
 }
 
-const loading = createLoaderReducer(actions);
-const errorMessage = createErrorMessageReducer(actions);
+const loading = createLoaderReducer({ ...projectActions, ...editorActions });
+const errorMessage = createErrorMessageReducer({ ...projectActions, ...editorActions });
 
 export default combineReducers({
   byId,

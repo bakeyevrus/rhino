@@ -1,19 +1,15 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { projectActions } from '../actions';
+import { editorActions } from '../actions';
 import { isLoggedIn, getActiveProjectId, getProjectById } from '../reducers';
 import WelcomePage from './WelcomePage';
 import AppBar from '../components/AppBar';
 
-function EditorPage({ project, loggedIn }) {
+function EditorPage({ project, loggedIn, fetchEditorState }) {
   useEffect(() => {
-    if (project.id == null) {
-      return;
-    }
-
-    projectActions.fetchProject(project.id);
-  }, [project.id]);
+    fetchEditorState();
+  }, [fetchEditorState]);
 
   return (
     <>
@@ -37,15 +33,25 @@ function mapStateToProps(state) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchEditorState: () => dispatch(editorActions.fetchEditorState())
+  };
+}
+
 EditorPage.defaultProps = {
   project: {}
 };
 
 EditorPage.propTypes = {
+  fetchEditorState: PropTypes.func.isRequired,
   project: PropTypes.shape({
     name: PropTypes.string
   }),
   loggedIn: PropTypes.bool.isRequired
 };
 
-export default connect(mapStateToProps)(EditorPage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditorPage);

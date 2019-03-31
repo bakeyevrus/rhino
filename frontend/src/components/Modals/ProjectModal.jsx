@@ -20,10 +20,10 @@ import { projectActions as actions } from '../../actions';
 function ProjectModal({
   project, createProject, updateProject, loading, errorMessage, onClose
 }) {
-  const { id, name: initName, description: initDesc = '' } = project;
+  const { id, name: initName, description: initDesc } = project;
   const isCreate = id === null;
-  const [name, setName] = useFormInput(initName);
-  const [description, setDescription] = useFormInput(initDesc);
+  const [name, setName] = useFormInput(initName || '');
+  const [description, setDescription] = useFormInput(initDesc || '');
   const formRef = useRef();
 
   return (
@@ -62,9 +62,11 @@ function ProjectModal({
         </ModalBody>
         <ModalFooter>
           <Button disabled={loading} color="danger" onClick={onClose}>
+
             Cancel
           </Button>
           <Button disabled={loading} type="submit" color="primary">
+
             Submit
           </Button>
         </ModalFooter>
