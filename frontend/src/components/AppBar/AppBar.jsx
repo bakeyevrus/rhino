@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import {
   Navbar, NavbarBrand, Nav, NavItem, NavLink, Button
 } from 'reactstrap';
@@ -22,7 +23,9 @@ export function AppBar({ loggedIn }) {
             <NavLink href="/profile">Profile</NavLink>
           </NavItem>
           <NavItem className="ml-3">
-            <Button color="success">Logout</Button>
+            <Button color="success" tag={Link} to="/auth">
+              Logout
+            </Button>
           </NavItem>
         </Nav>
       </>

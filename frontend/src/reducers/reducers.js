@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import auth from './auth.reducer';
 import modal from './modal.reducer';
+import auth, * as fromAuth from './auth.reducer';
 import editorProject, * as fromProjects from './project.reducer';
 
 const findProjectIndexById = (state, id) => state.map(project => project.id).indexOf(id);
@@ -62,7 +62,7 @@ const rootReducer = combineReducers({
 
 export default rootReducer;
 
-export const isLoggedIn = state => state.auth.loggedIn;
+export const isLoggedIn = state => fromAuth.isLoggedIn(state.auth);
 
 // Projects
 export const getProjectList = state => fromProjects.getProjectList(state.project);

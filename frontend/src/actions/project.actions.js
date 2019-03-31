@@ -22,7 +22,7 @@ function fetchProjectList() {
   return (dispatch) => {
     dispatch(request(FETCH_PROJECT_LIST));
 
-    projectService.fetchProjectList().then(
+    return projectService.fetchProjectList().then(
       projects => dispatch({
         type: FETCH_PROJECT_LIST,
         projects
@@ -36,7 +36,7 @@ function fetchProject(projectId) {
   return (dispatch) => {
     dispatch(request(FETCH_PROJECT));
 
-    projectService.fetchProject(projectId).then(
+    return projectService.fetchProject(projectId).then(
       project => dispatch({
         type: FETCH_PROJECT,
         project
@@ -50,7 +50,7 @@ function createProject(newProject) {
   return (dispatch) => {
     dispatch(request(CREATE_PROJECT));
 
-    projectService.createProject(newProject).then(
+    return projectService.createProject(newProject).then(
       (project) => {
         dispatch({
           type: CREATE_PROJECT,
@@ -67,7 +67,7 @@ function updateProject(updatedProject) {
   return (dispatch) => {
     dispatch(request(UPDATE_PROJECT));
 
-    projectService.updateProject(updatedProject).then(
+    return projectService.updateProject(updatedProject).then(
       (project) => {
         dispatch({
           type: UPDATE_PROJECT,
@@ -84,7 +84,7 @@ function deleteProject(id) {
   return (dispatch) => {
     dispatch(request(DELETE_PROJECT));
 
-    projectService.deleteProject(id).then(
+    return projectService.deleteProject(id).then(
       (deletedProject) => {
         dispatch({
           type: DELETE_PROJECT,

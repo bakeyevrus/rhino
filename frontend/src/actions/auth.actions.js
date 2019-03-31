@@ -7,13 +7,20 @@ const {
 
 const authRequest = () => ({ type: AUTH_REQUEST });
 const authSuccess = token => ({ type: AUTH_SUCCESS, token });
-const authError = errMsg => ({ type: AUTH_ERROR, errMsg: errMsg || 'Sorry, something went wrong' });
+const authError = errMsg => ({
+  type: AUTH_ERROR,
+  errMessage: errMsg || 'Sorry, something went wrong'
+});
 
-const login = (email, password) => (dispatch) => {
+const login = (email, password, history) => (dispatch) => {
   dispatch(authRequest());
-  authService
-    .login(email, password)
-    .then(token => dispatch(authSuccess(token)), errMsg => dispatch(authError(errMsg)));
+  return authService.login(email, password).then(
+    (token) => {
+      dispatch(authSuccess(token));
+      history.push('/editor');
+    },
+    errMsg => dispatch(authError(errMsg))
+  );
 };
 
 const logout = () => {
@@ -23,14 +30,18 @@ const logout = () => {
   };
 };
 
-const register = user => (dispatch) => {
+const register = (user, history) => (dispatch) => {
   dispatch(authRequest());
-  authService
-    .register(user)
-    .then(token => dispatch(authSuccess(token)), errMsg => dispatch(authError(errMsg)));
+  return authService.register(user).then(
+    (token) => {
+      dispatch(authSuccess(token));
+      history.push('/editor');
+    },
+    errMsg => dispatch(authError(errMsg))
+  );
 };
 
-export const authActions = {
+const authActions = {
   login,
   logout,
   register

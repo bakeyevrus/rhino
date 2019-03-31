@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router';
-import { AppBar } from './AppBar';
+import SecuredRoute from './SecuredRoute';
 import LoginPage from '../LoginPage';
 import EditorPage from '../EditorPage';
 import Modal from './Modals';
@@ -12,16 +12,14 @@ Root.propTypes = {
   loggedIn: PropTypes.bool.isRequired
 };
 
-function Root({ loggedIn: tempNotUsed }) {
-  const loggedIn = true;
+function Root({ loggedIn }) {
   return (
     <>
-      <AppBar loggedIn={loggedIn} />
       <Switch>
         {/* TODO: extract endpoints to constants */}
         <Route path="/auth" component={LoginPage} />
-        <Route path="/editor" component={EditorPage} />
-        <Redirect to="/auth" />
+        <SecuredRoute loggedIn={loggedIn} path="/editor" component={EditorPage} />
+        <Redirect to="/editor" />
       </Switch>
       <Modal />
     </>
