@@ -40,6 +40,7 @@ public class UserHandler {
         this.mapper = mapper;
     }
 
+
     public Mono<ServerResponse> register(ServerRequest request) {
         return request
                 .bodyToMono(UserRegisterRequestDto.class)

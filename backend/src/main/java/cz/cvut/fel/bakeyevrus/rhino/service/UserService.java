@@ -2,41 +2,37 @@ package cz.cvut.fel.bakeyevrus.rhino.service;
 
 import cz.cvut.fel.bakeyevrus.rhino.model.User;
 import cz.cvut.fel.bakeyevrus.rhino.repository.UserRepository;
-import cz.cvut.fel.bakeyevrus.rhino.security.JwtUtil;
+import cz.cvut.fel.bakeyevrus.rhino.util.JwtUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Log4j2
 @Service
-public class UserService implements ReactiveUserDetailsService {
+public class UserService {
 
     private UserRepository userRepo;
     private JwtUtil jwtUtil;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepo, JwtUtil jwtUtil) {
+    public UserService(UserRepository userRepo, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Mono<String> register(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user)
-                .map(User::toUserDetails)
                 .map(jwtUtil::generateToken);
     }
 
     public Mono<String> login(String username, String password) {
-        return findByUsername(username)
-                .filter(user -> user.getPassword().equals(password))
+        return userRepo.findByEmail(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .map(jwtUtil::generateToken);
-    }
-
-    @Override
-    public Mono<UserDetails> findByUsername(String username) {
-        return userRepo.findByEmail(username).map(User::toUserDetails);
     }
 }

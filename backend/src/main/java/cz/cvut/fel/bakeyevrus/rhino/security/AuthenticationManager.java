@@ -1,5 +1,6 @@
 package cz.cvut.fel.bakeyevrus.rhino.security;
 
+import cz.cvut.fel.bakeyevrus.rhino.util.JwtUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -43,6 +44,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     null,
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
             );
+            auth.setDetails(jwtUtil.getUserIdFromToken(authToken));
             return Mono.just(auth);
         } else {
             return Mono.empty();

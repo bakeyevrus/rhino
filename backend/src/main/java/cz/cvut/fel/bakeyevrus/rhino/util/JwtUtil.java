@@ -1,4 +1,4 @@
-package cz.cvut.fel.bakeyevrus.rhino.security;
+package cz.cvut.fel.bakeyevrus.rhino.util;
 
 import cz.cvut.fel.bakeyevrus.rhino.model.User;
 import io.jsonwebtoken.Claims;
@@ -15,6 +15,8 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
+
+    private static String USER_ID_CLAIM = "userId";
 
     @Value("${jjwt.secret}")
     private String secret;
@@ -37,11 +39,15 @@ public class JwtUtil {
         return getAllClaimsFromToken(token).getExpiration();
     }
 
-    public String generateToken(UserDetails user) {
+    public String getUserIdFromToken(String token) {
+        return getAllClaimsFromToken(token).get(USER_ID_CLAIM, String.class);
+    }
+
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        // TODO: customize claims
-        claims.put("hello", "world");
-        return doGenerateToken(claims, user.getUsername());
+        // Don't forget that id is ObjectId type
+        claims.put(USER_ID_CLAIM, user.getId().toHexString());
+        return doGenerateToken(claims, user.getEmail());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String username) {
