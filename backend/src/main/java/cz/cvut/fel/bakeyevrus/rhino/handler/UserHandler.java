@@ -77,7 +77,7 @@ public class UserHandler {
                         ServerResponse.status(HttpStatus.UNAUTHORIZED)
                                 .syncBody(new ErrorResponseDto("Invalid credentials provided")))
                 .onErrorResume(
-                        throwable -> throwable instanceof ServerWebInputException,
+                        ServerWebInputException.class,
                         (err) -> {
                             log.info(err.getMessage());
                             return ServerResponse.badRequest().build();
