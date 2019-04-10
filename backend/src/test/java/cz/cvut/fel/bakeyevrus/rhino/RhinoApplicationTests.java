@@ -1,5 +1,6 @@
 package cz.cvut.fel.bakeyevrus.rhino;
 
+import lombok.Data;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +18,18 @@ public class RhinoApplicationTests {
 
     @Test
     public void reactiveProgramming() {
+        @Data
+        class MyHolder<T> {
+            private T value;
 
-        Mono<String> stringMono = Mono.empty().log().then(Mono.just("ASD")).log().defaultIfEmpty("Empty Mono");
-        StepVerifier.create(stringMono).expectNext("Empty Mono").expectComplete().verify();
+            public MyHolder(T value) {
+                this.value = value;
+            }
+        }
+
+
+        Mono<MyHolder<String>> hey = Mono.just(new MyHolder<String>("Hey")).doOnNext(stringHolder -> stringHolder.setValue("Hey, World!")).log();
+        StepVerifier.create(hey).expectNextMatches(stringHolder -> stringHolder.getValue().equals("Hey, World!")).expectComplete().verify();
 
     }
 
