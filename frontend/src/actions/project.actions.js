@@ -10,7 +10,7 @@ const {
   DELETE_PROJECT
 } = projectActionTypes;
 
-export const projectActions = {
+const projectActions = {
   fetchProjectList,
   fetchProject,
   createProject,
@@ -22,7 +22,7 @@ function fetchProjectList() {
   return (dispatch) => {
     dispatch(request(FETCH_PROJECT_LIST));
 
-    return projectService.fetchProjectList().then(
+    return projectService.getAll().then(
       projects => dispatch({
         type: FETCH_PROJECT_LIST,
         projects
@@ -36,7 +36,7 @@ function fetchProject(projectId) {
   return (dispatch) => {
     dispatch(request(FETCH_PROJECT));
 
-    return projectService.fetchProject(projectId).then(
+    return projectService.getById(projectId).then(
       project => dispatch({
         type: FETCH_PROJECT,
         project
@@ -50,7 +50,7 @@ function createProject(newProject) {
   return (dispatch) => {
     dispatch(request(CREATE_PROJECT));
 
-    return projectService.createProject(newProject).then(
+    return projectService.create(newProject).then(
       (project) => {
         dispatch({
           type: CREATE_PROJECT,
@@ -67,7 +67,7 @@ function updateProject(updatedProject) {
   return (dispatch) => {
     dispatch(request(UPDATE_PROJECT));
 
-    return projectService.updateProject(updatedProject).then(
+    return projectService.update(updatedProject).then(
       (project) => {
         dispatch({
           type: UPDATE_PROJECT,
@@ -84,11 +84,11 @@ function deleteProject(id) {
   return (dispatch) => {
     dispatch(request(DELETE_PROJECT));
 
-    return projectService.deleteProject(id).then(
-      (deletedProject) => {
+    return projectService.deleteById(id).then(
+      (projectId) => {
         dispatch({
           type: DELETE_PROJECT,
-          id: deletedProject.id
+          id: projectId
         });
       },
       errMessage => dispatch(error(DELETE_PROJECT, { errMessage }))

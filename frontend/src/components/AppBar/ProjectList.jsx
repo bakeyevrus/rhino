@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -18,14 +18,15 @@ import { getProjectList, isProjectLoading, getActiveProjectId } from '../../redu
 ProjectList.propTypes = {
   projects: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      active: PropTypes.bool.isRequired,
+      id: PropTypes.string,
+      name: PropTypes.string,
+      active: PropTypes.bool,
       description: PropTypes.string
     })
   ).isRequired,
   openCreateProjectModal: PropTypes.func.isRequired,
   openUpdateProjectModal: PropTypes.func.isRequired,
+  fetchProjectList: PropTypes.func.isRequired,
   deleteProject: PropTypes.func.isRequired,
   selectProject: PropTypes.func.isRequired,
   loading: PropTypes.bool
@@ -38,12 +39,16 @@ ProjectList.defaultProps = {
 // TODO: make overflow:scroll if there are a lot of projects created
 function ProjectList({
   projects,
+  fetchProjectList,
   openCreateProjectModal,
   openUpdateProjectModal,
   deleteProject,
   selectProject,
   loading
 }) {
+  useEffect(() => {
+    fetchProjectList();
+  }, [fetchProjectList]);
   return (
     <Nav navbar>
       <UncontrolledDropdown nav inNavbar>
@@ -68,7 +73,7 @@ function ProjectList({
     }
 
     return (
-      <>
+      <div className="dropdown-menu-inner-container">
         {projects.map(project => (
           <ProjectTab
             active={project.active}
@@ -81,7 +86,7 @@ function ProjectList({
             onDeleteClick={deleteProject}
           />
         ))}
-      </>
+      </div>
     );
   }
 }
@@ -106,6 +111,7 @@ function mapDispatchToProps(dispatch) {
   };
   // TODO: find better way how to deal with modals
   return {
+    fetchProjectList: () => dispatch(projectActions.fetchProjectList()),
     selectProject: id => dispatch(projectActions.fetchProject(id)),
     openCreateProjectModal: () => dispatchOpenModal({ modalType: modalTypes.PROJECT }),
     openUpdateProjectModal: projectToUpdate => dispatchOpenModal({

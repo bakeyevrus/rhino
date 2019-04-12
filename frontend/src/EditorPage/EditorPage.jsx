@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { editorActions } from '../actions';
-import { isLoggedIn, getActiveProjectId, getProjectById } from '../reducers';
+import { projectActions } from '../actions';
+import { isLoggedIn, getActiveProjectId, getActiveProject } from '../reducers';
 import WelcomePage from './WelcomePage';
 import AppBar from '../components/AppBar';
 
-function EditorPage({ project, loggedIn, fetchEditorState }) {
+function EditorPage({
+  activeProjectId, project, loggedIn, fetchProject
+}) {
   useEffect(() => {
-    fetchEditorState();
-  }, [fetchEditorState]);
+    fetchProject(activeProjectId);
+  }, [activeProjectId, fetchProject]);
 
   return (
     <>
@@ -21,34 +23,33 @@ function EditorPage({ project, loggedIn, fetchEditorState }) {
 }
 
 function mapStateToProps(state) {
-  const loggedIn = isLoggedIn(state);
-  const activeProjectId = getActiveProjectId(state);
-  if (activeProjectId == null) {
-    return { loggedIn };
-  }
-  const project = getProjectById(state, activeProjectId);
   return {
-    project,
-    loggedIn
+    loggedIn: isLoggedIn(state),
+    activeProjectId: getActiveProjectId(state),
+    project: getActiveProject(state)
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    fetchEditorState: () => dispatch(editorActions.fetchEditorState())
+    fetchProject: id => dispatch(projectActions.fetchProject(id))
   };
 }
 
 EditorPage.defaultProps = {
+  activeProjectId: null,
   project: {}
 };
 
 EditorPage.propTypes = {
-  fetchEditorState: PropTypes.func.isRequired,
   project: PropTypes.shape({
-    name: PropTypes.string
+    id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string
   }),
-  loggedIn: PropTypes.bool.isRequired
+  activeProjectId: PropTypes.string,
+  loggedIn: PropTypes.bool.isRequired,
+  fetchProject: PropTypes.func.isRequired
 };
 
 export default connect(
