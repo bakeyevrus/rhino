@@ -10,7 +10,9 @@ function EditorPage({
   activeProjectId, project, loggedIn, fetchProject
 }) {
   useEffect(() => {
-    fetchProject(activeProjectId);
+    if (activeProjectId != null) {
+      fetchProject(activeProjectId);
+    }
   }, [activeProjectId, fetchProject]);
 
   return (
