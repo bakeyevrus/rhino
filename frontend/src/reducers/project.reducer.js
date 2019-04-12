@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { projectActionTypes as projectActions, editorActionTypes as editorActions } from '../const';
+import { projectActionTypes as projectActions } from '../const';
 import createLoaderReducer from './loader.reducer';
 import createErrorMessageReducer from './error.reducer';
 
@@ -11,13 +11,11 @@ const {
   DELETE_PROJECT
 } = projectActions;
 
-const { FETCH_EDITOR_STATE } = editorActions;
-
 function byId(state = {}, action) {
   switch (action.type) {
     case FETCH_PROJECT_LIST:
       return {
-        ...action.projects.byId
+        ...action.projects
       };
     case FETCH_PROJECT:
     case CREATE_PROJECT:
@@ -31,33 +29,26 @@ function byId(state = {}, action) {
       delete newState[action.id];
       return newState;
     }
-    case FETCH_EDITOR_STATE:
-      return {
-        ...action.response.entities.projects
-      };
     default:
       return state;
   }
 }
 
-function activeProjectId(state = null, action) {
+const initProjectId = localStorage.getItem('activeProjectId');
+function activeProjectId(state = initProjectId, action) {
   switch (action.type) {
-    case FETCH_PROJECT_LIST:
-      return action.projects.activeProjectId;
     case FETCH_PROJECT:
     case CREATE_PROJECT:
       return action.project.id;
     case DELETE_PROJECT:
       return state === action.id ? null : state;
-    case FETCH_EDITOR_STATE:
-      return action.response.result.activeProjectId;
     default:
       return state;
   }
 }
 
-const loading = createLoaderReducer({ ...projectActions, ...editorActions });
-const errorMessage = createErrorMessageReducer({ ...projectActions, ...editorActions });
+const loading = createLoaderReducer({ ...projectActions });
+const errorMessage = createErrorMessageReducer({ ...projectActions });
 
 export default combineReducers({
   byId,
@@ -66,10 +57,16 @@ export default combineReducers({
   errorMessage
 });
 
+export function getActiveProject(state) {
+  const id = getActiveProjectId(state);
+  return getProjectById(state, id);
+}
+
 export function getProjectList(state) {
   const activeId = getActiveProjectId(state);
+  const activeProject = getProjectById(state, activeId);
   const projects = [];
-  if (activeId != null) {
+  if (activeId != null && activeProject != null) {
     projects.push({
       ...state.byId[activeId],
       active: true

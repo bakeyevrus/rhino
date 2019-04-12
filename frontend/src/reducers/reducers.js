@@ -65,6 +65,7 @@ export default rootReducer;
 export const isLoggedIn = state => fromAuth.isLoggedIn(state.auth);
 
 // Projects
+export const getActiveProject = state => fromProjects.getActiveProject(state.project);
 export const getProjectList = state => fromProjects.getProjectList(state.project);
 export const isProjectLoading = state => fromProjects.isLoading(state.project);
 export const getActiveProjectId = state => fromProjects.getActiveProjectId(state.project);

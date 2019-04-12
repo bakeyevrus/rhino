@@ -1,106 +1,103 @@
-import editorState, {
-  findProjectById,
-  removeProject,
-  addProject,
-  setActiveProject,
-  mutateProject
-} from './mockState';
+import axios from 'axios';
+import { handleErrorResponse, logDifferentResponseStatus, getAuthHeader } from './helper';
 
 const projectService = {
-  fetchProject,
-  createProject,
-  updateProject,
-  deleteProject
+  getAll,
+  getById,
+  create,
+  update,
+  deleteById
 };
 
-function timeout(seconds) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log('Server state: ', editorState);
-      resolve();
-    }, seconds * 1000);
-  });
-}
-
-function generateId() {
-  let text = '';
-  const maxLength = 20;
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < maxLength; i += 1) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-
-  return text;
-}
-
-function deleteProject(id) {
-  if (id == null) {
-    throw new Error(`Provided ID is null, ${id}`);
-  }
-
-  return timeout(2).then(() => {
-    const projectToDelete = findProjectById(id);
-    if (projectToDelete == null) {
-      throw new Error("Provided ID doesn't exist in DB");
+function getAll() {
+  return axios.get('/api/v1/project', { headers: getAuthHeader() }).then((response) => {
+    if (response.status === 200) {
+      const projectList = response.data;
+      return normalizeResponse(projectList);
     }
-    removeProject(id);
-    if (id === editorState.activeProjectId) {
-      setActiveProject(null);
-    }
-    return projectToDelete;
-  });
+
+    logDifferentResponseStatus(response, 200);
+    return {};
+  }, handleErrorResponse);
 }
 
-function createProject(project) {
+function getById(projectId) {
+  validateIdNotNull(projectId);
+
+  return axios.get(`/api/v1/project/${projectId}`, { headers: getAuthHeader() }).then((response) => {
+    if (response.status === 200) {
+      const project = response.data;
+      return project;
+    }
+
+    logDifferentResponseStatus(response, 200);
+    return {};
+  }, handleErrorResponse);
+}
+
+function create(project) {
+  validateProjectNotNull(project);
+
+  return axios.post('/api/v1/project', project, { headers: getAuthHeader() }).then((response) => {
+    if (response.status === 200) {
+      const createdProject = response.data;
+      return createdProject;
+    }
+
+    logDifferentResponseStatus(response, 200);
+    return {};
+  }, handleErrorResponse);
+}
+
+function update(project) {
+  validateProjectNotNull(project);
+  validateIdNotNull(project.id);
+
+  return axios
+    .put(`/api/v1/project/${project.id}`, project, { headers: getAuthHeader() })
+    .then((response) => {
+      if (response.status === 200) {
+        const updatedProject = response.data;
+        return updatedProject;
+      }
+
+      logDifferentResponseStatus(response, 200);
+      return {};
+    }, handleErrorResponse);
+}
+
+function deleteById(projectId) {
+  validateIdNotNull(projectId);
+
+  return axios
+    .delete(`/api/v1/project/${projectId}`, { headers: getAuthHeader() })
+    .then((response) => {
+      if (response.status === 200) {
+        return projectId;
+      }
+
+      logDifferentResponseStatus(response, 200);
+      return '';
+    }, handleErrorResponse);
+}
+
+function normalizeResponse(projectList) {
+  return projectList.reduce(
+    (accumulator, project) => ({ ...accumulator, [project.id]: project }),
+    {}
+  );
+}
+
+function validateProjectNotNull(project) {
   if (project == null) {
     throw new Error(`Provided project is null, ${project}`);
   }
-
-  return timeout(2).then(() => {
-    const id = generateId();
-    const createdProject = {
-      ...project,
-      id
-    };
-
-    addProject(createdProject);
-
-    return createdProject;
-  });
 }
 
-function fetchProject(projectId) {
-  if (projectId == null) {
-    throw new Error(`Provided projectId is null, ${projectId}`);
+function validateIdNotNull(id) {
+  if (id == null) {
+    throw new Error(`Project ID is null, ${id}`);
   }
-
-  return timeout(2).then(() => {
-    const targetProject = findProjectById(projectId);
-    if (targetProject == null) {
-      throw new Error(`Project with id ${projectId} hasn't been found`);
-    }
-    setActiveProject(projectId);
-
-    return targetProject;
-  });
-}
-
-function updateProject(updatedProject) {
-  if (updatedProject == null || updatedProject.id == null) {
-    throw new Error('Either id or project passed is null', updatedProject);
-  }
-
-  return timeout(2).then(() => {
-    const { id } = updatedProject;
-    const targetProject = findProjectById(id);
-    if (targetProject == null) {
-      throw new Error(`Project with id ${id} hasn't been found`);
-    }
-    mutateProject(updatedProject);
-
-    return updatedProject;
-  });
 }
 
 export default projectService;
