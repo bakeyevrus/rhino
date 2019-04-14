@@ -1,0 +1,8 @@
+span.graph-edit-icon, span.graph-delete-icon {
+    font-size: 0.75em;
+}
+
+.active-graph-title {
+    word-break: break-all;
+}
+

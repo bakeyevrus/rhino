@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import modal from './modal.reducer';
 import auth, * as fromAuth from './auth.reducer';
 import editorProject, * as fromProjects from './project.reducer';
+import graphs, * as fromGraphs from './graph.reducer';
 
 const findProjectIndexById = (state, id) => state.map(project => project.id).indexOf(id);
 
@@ -56,6 +57,7 @@ const rootReducer = combineReducers({
   projects,
   activeProjectId,
   project: editorProject,
+  graphs,
   auth,
   modal
 });
@@ -63,6 +65,13 @@ const rootReducer = combineReducers({
 export default rootReducer;
 
 export const isLoggedIn = state => fromAuth.isLoggedIn(state.auth);
+
+// Graphs
+export const getGraphList = state => fromGraphs.getGraphList(state.graphs);
+export const getActiveGraphId = state => fromGraphs.getActiveGraphId(state.graphs);
+export const getGraphById = (state, id) => fromGraphs.getGraphById(state.graphs, id);
+// TODO: selector and loader
+export const isGraphLoading = state => false;
 
 // Projects
 export const getActiveProject = state => fromProjects.getActiveProject(state.project);

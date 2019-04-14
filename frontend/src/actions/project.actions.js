@@ -1,6 +1,6 @@
 import { projectService } from '../services';
 import { projectActionTypes } from '../const';
-import { modalActions } from './modal.actions';
+import modalActions from './modal.actions';
 
 const {
   FETCH_PROJECT_LIST,
