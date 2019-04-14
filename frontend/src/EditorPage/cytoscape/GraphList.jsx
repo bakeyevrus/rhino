@@ -1,25 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button } from 'reactstrap';
+import { ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { modalActions, graphActions } from '../../actions';
 import { modalTypes } from '../../const';
-import { getActiveGraphId, getGraphList } from '../../reducers';
+import { getActiveProject, getActiveGraphId, getGraphList } from '../../reducers';
 import ActiveGraphTab from './ActiveGraphTab';
 import GraphTab from './GraphTab';
 
 GraphList.propTypes = {
+  activeProjectName: PropTypes.string.isRequired,
+  selectGraph: PropTypes.func.isRequired,
+  deleteGraph: PropTypes.func.isRequired,
+  openCreateGraphModal: PropTypes.func.isRequired,
+  openUpdateGraphModal: PropTypes.func.isRequired,
   activeGraphId: PropTypes.string,
   graphs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired
     })
-  ),
-  selectGraph: PropTypes.func.isRequired,
-  deleteGraph: PropTypes.func.isRequired,
-  openCreateGraphModal: PropTypes.func.isRequired,
-  openUpdateGraphModal: PropTypes.func.isRequired
+  )
 };
 
 GraphList.defaultProps = {
@@ -28,6 +29,7 @@ GraphList.defaultProps = {
 };
 
 function GraphList({
+  activeProjectName,
   activeGraphId,
   graphs,
   selectGraph,
@@ -36,12 +38,15 @@ function GraphList({
   openUpdateGraphModal
 }) {
   return (
-    <>
-      <Button color="primary" block onClick={openCreateGraphModal}>
-        Create
-      </Button>
+    <ListGroup>
+      <ListGroupItem>
+        {`Project name: ${activeProjectName}`}
+        <Button color="primary" block onClick={openCreateGraphModal} className="mt-2">
+          Create graph
+        </Button>
+      </ListGroupItem>
       {renderGraphList()}
-    </>
+    </ListGroup>
   );
 
   function renderGraphList() {
@@ -67,7 +72,9 @@ function GraphList({
 }
 
 function mapStateToProps(state) {
+  const { name: activeProjectName } = getActiveProject(state);
   return {
+    activeProjectName,
     graphs: getGraphList(state),
     activeGraphId: getActiveGraphId(state)
   };
