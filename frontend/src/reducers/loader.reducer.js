@@ -1,3 +1,9 @@
+/**
+ * Generates loader reducer function for provided action types, i.e for given actionTypes
+ * ['GET_PROJECT', 'CREATE_PROJECT'] creates reducer, which will return true for actionTypes
+ * ['GET_PROJECT_REQUEST', 'CREATE_PROJECT_REQUEST']
+ * @param {String[]} actionTypes
+ */
 const createLoaderReducer = actionTypes => (state = false, action) => {
   const { type } = action;
 

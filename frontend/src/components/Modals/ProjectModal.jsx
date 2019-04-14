@@ -14,7 +14,7 @@ import {
   Input,
   Alert
 } from 'reactstrap';
-import { getProjectById, isProjectLoading, getErrorMessage } from '../../reducers';
+import { getProjectById, isProjectLoading, getProjectErrorMessage } from '../../reducers';
 import { projectActions as actions } from '../../actions';
 
 function ProjectModal({
@@ -62,11 +62,9 @@ function ProjectModal({
         </ModalBody>
         <ModalFooter>
           <Button disabled={loading} color="danger" onClick={onClose}>
-
             Cancel
           </Button>
           <Button disabled={loading} type="submit" color="primary">
-
             Submit
           </Button>
         </ModalFooter>
@@ -135,7 +133,7 @@ ProjectModal.propTypes = {
 
 function mapStateToProps(state, ownProps) {
   const loading = isProjectLoading(state);
-  const errorMessage = getErrorMessage(state);
+  const errorMessage = getProjectErrorMessage(state);
   const newProps = { loading, errorMessage };
   if (ownProps.project != null) {
     newProps.project = getProjectById(state, ownProps.project.id);
