@@ -9,5 +9,3 @@ export const graphTypes = {
   FLOW: 'Flow',
   STATE_MACHINE: 'State machine'
 };
-
-export default graphActionTypes;

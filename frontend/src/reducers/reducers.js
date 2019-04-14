@@ -70,8 +70,8 @@ export const isLoggedIn = state => fromAuth.isLoggedIn(state.auth);
 export const getGraphList = state => fromGraphs.getGraphList(state.graphs);
 export const getActiveGraphId = state => fromGraphs.getActiveGraphId(state.graphs);
 export const getGraphById = (state, id) => fromGraphs.getGraphById(state.graphs, id);
-// TODO: selector and loader
-export const isGraphLoading = state => false;
+export const isGraphLoading = state => fromGraphs.isLoading(state.graphs);
+export const getGraphErrorMessage = state => fromGraphs.getErrorMessage(state.graphs);
 
 // Projects
 export const getActiveProject = state => fromProjects.getActiveProject(state.project);
@@ -79,4 +79,4 @@ export const getProjectList = state => fromProjects.getProjectList(state.project
 export const isProjectLoading = state => fromProjects.isLoading(state.project);
 export const getActiveProjectId = state => fromProjects.getActiveProjectId(state.project);
 export const getProjectById = (state, id) => fromProjects.getProjectById(state.project, id);
-export const getErrorMessage = state => fromProjects.getErrorMessage(state.project);
+export const getProjectErrorMessage = state => fromProjects.getErrorMessage(state.project);

@@ -13,7 +13,7 @@ import {
   Input,
   Alert
 } from 'reactstrap';
-import { getGraphById, getErrorMessage, isGraphLoading } from '../../reducers';
+import { getGraphById, getGraphErrorMessage, isGraphLoading } from '../../reducers';
 import { graphActions as actions } from '../../actions';
 import { graphTypes } from '../../const';
 
@@ -135,7 +135,7 @@ function useFormInput(initValue) {
 
 function mapStateToProps(state, ownProps) {
   const loading = isGraphLoading(state);
-  const errorMessage = getErrorMessage(state);
+  const errorMessage = getGraphErrorMessage(state);
   const newProps = { loading, errorMessage };
   if (ownProps.graphId != null) {
     newProps.graph = getGraphById(state, ownProps.graphId);

@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import { graphActionTypes, graphTypes } from '../const';
+import createLoaderReducer from './loader.reducer';
+import createErrorMessageReducer from './error.reducer';
 
 const {
   CREATE_GRAPH, UPDATE_GRAPH, SWITCH_GRAPH, DELETE_GRAPH
@@ -53,11 +55,18 @@ function activeGraphId(state = initGraphId, action) {
   }
 }
 
+const loading = createLoaderReducer({ ...graphActionTypes });
+const errorMessage = createErrorMessageReducer({ ...graphActionTypes });
+
 export const getGraphList = state => Object.keys(state.byId).map(id => state.byId[id]);
 export const getActiveGraphId = state => state.activeGraphId;
 export const getGraphById = (state, id) => state.byId[id];
+export const isLoading = state => state.loading;
+export const getErrorMessage = state => state.errorMessage;
 
 export default combineReducers({
   byId,
-  activeGraphId
+  activeGraphId,
+  loading,
+  errorMessage
 });
