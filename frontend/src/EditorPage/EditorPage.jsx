@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { projectActions } from '../actions';
 import { isLoggedIn, getActiveProjectId, getActiveProject } from '../reducers';
-import WelcomePage from './WelcomePage';
 import AppBar from '../components/AppBar';
+import WelcomePage from './WelcomePage';
+import CytoscapeEngine from './cytoscape/CytoscapeEngine';
 
 function EditorPage({
   activeProjectId, project, loggedIn, fetchProject
@@ -18,7 +19,7 @@ function EditorPage({
   return (
     <>
       <AppBar loggedIn={loggedIn} />
-      {project.id != null && <h1>{`Hello from project ${project.name}`}</h1>}
+      {project.id != null && <CytoscapeEngine />}
       {project.id == null && <WelcomePage />}
     </>
   );

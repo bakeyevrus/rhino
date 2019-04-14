@@ -100,33 +100,30 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  /**
-   * Extracts `modalType` and `modalProps` params from `actionPayload`
-   * and dispatches `showModal` action
-   * @param {Object} actionPayload
-   */
-  const dispatchOpenModal = (actionPayload) => {
-    const { modalType, modalProps } = actionPayload;
-    dispatch(modalActions.showModal(modalType, modalProps));
-  };
   // TODO: find better way how to deal with modals
   return {
     fetchProjectList: () => dispatch(projectActions.fetchProjectList()),
     selectProject: id => dispatch(projectActions.fetchProject(id)),
-    openCreateProjectModal: () => dispatchOpenModal({ modalType: modalTypes.PROJECT }),
-    openUpdateProjectModal: projectToUpdate => dispatchOpenModal({
-      modalType: modalTypes.PROJECT,
-      modalProps: {
-        // Specify key, because ProjectModal is copying props to state
-        // See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
-        key: projectToUpdate.id,
-        project: projectToUpdate
-      }
-    }),
-    deleteProject: (id, name) => dispatchOpenModal(deleteProjectActionPayload(id, name))
+    openCreateProjectModal: () => dispatch(
+      modalActions.showModal({
+        modalType: modalTypes.PROJECT
+      })
+    ),
+    openUpdateProjectModal: projectToUpdate => dispatch(
+      modalActions.showModal({
+        modalType: modalTypes.PROJECT,
+        modalProps: {
+          // Specify key, because ProjectModal is copying props to state
+          // See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
+          key: projectToUpdate.id,
+          project: projectToUpdate
+        }
+      })
+    ),
+    deleteProject: (id, name) => dispatch(modalActions.showModal(projectDeleteModal(id, name)))
   };
 
-  function deleteProjectActionPayload(id, name) {
+  function projectDeleteModal(id, name) {
     const modalType = modalTypes.ALERT;
     const modalProps = {
       title: 'Warning!',

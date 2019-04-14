@@ -1,22 +1,23 @@
 import { modalActionTypes } from '../const';
 
-export const modalActions = {
+const { SHOW_MODAL, HIDE_MODAL } = modalActionTypes;
+
+const modalActions = {
   showModal,
   hideModal
 };
 
-function showModal(modalType, modalProps) {
+function showModal(modal) {
   return {
-    type: modalActionTypes.SHOW_MODAL,
-    modalType,
-    modalProps
+    type: SHOW_MODAL,
+    modal
   };
 }
 
 function hideModal() {
   return {
-    type: modalActionTypes.HIDE_MODAL
+    type: HIDE_MODAL
   };
 }
 
-export default modalActionTypes;
+export default modalActions;

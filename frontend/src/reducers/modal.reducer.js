@@ -9,8 +9,8 @@ function modal(state = initialState, action) {
   switch (action.type) {
     case modalActionTypes.SHOW_MODAL:
       return {
-        modalType: action.modalType,
-        modalProps: action.modalProps
+        modalType: action.modal.modalType,
+        modalProps: action.modal.modalProps
       };
     case modalActionTypes.HIDE_MODAL:
       return initialState;

@@ -5,10 +5,12 @@ import { modalActions } from '../../actions';
 import { modalTypes } from '../../const';
 import Alert from './AlertModal';
 import Project from './ProjectModal';
+import Graph from './GraphModal';
 
 const MODAL_TYPES = {
   [modalTypes.ALERT]: Alert,
-  [modalTypes.PROJECT]: Project
+  [modalTypes.PROJECT]: Project,
+  [modalTypes.GRAPH]: Graph
 };
 
 function ModalDispatcher({ modalType, modalProps, close }) {
@@ -27,7 +29,7 @@ ModalDispatcher.defaultProps = {
 
 ModalDispatcher.propTypes = {
   close: PropTypes.func.isRequired,
-  modalType: PropTypes.oneOf([modalTypes.ALERT, modalTypes.PROJECT]),
+  modalType: PropTypes.oneOf(Object.keys(modalTypes)),
   /* eslint-disable react/forbid-prop-types */
   modalProps: PropTypes.object
 };
