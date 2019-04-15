@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ListGroupItem } from 'reactstrap';
-import './graphTab.css';
 
 function GraphTab({ id, name, onSelectClick }) {
   return (

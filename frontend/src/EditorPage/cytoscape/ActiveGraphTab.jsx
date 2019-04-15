@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Card, CardBody, CardTitle, Button, ListGroup, ListGroupItem
 } from 'reactstrap';
-import './activeGraphTab.css';
 
 function ActiveGraphTab({
   id, name, onEditClick, onDeleteClick
@@ -19,10 +18,10 @@ function ActiveGraphTab({
           {name}
           <div>
             <Button close onClick={handleDeleteClick} size="sm" className="ml-2">
-              <span className="oi oi-delete graph-delete-icon" aria-hidden="true" />
+              <span className="oi oi-delete graph-panel-icon" aria-hidden="true" />
             </Button>
             <Button size="sm" close onClick={handleEditClick}>
-              <span className="oi oi-pencil graph-edit-icon" aria-hidden="true" />
+              <span className="oi oi-pencil graph-panel-icon" aria-hidden="true" />
             </Button>
           </div>
         </CardTitle>
