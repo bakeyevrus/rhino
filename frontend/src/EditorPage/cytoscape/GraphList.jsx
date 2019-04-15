@@ -1,12 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { ListGroup, ListGroupItem, Button } from 'reactstrap';
+import {
+  Card, CardHeader, CardBody, CardTitle, Button
+} from 'reactstrap';
 import { modalActions, graphActions } from '../../actions';
 import { modalTypes } from '../../const';
 import { getActiveProject, getActiveGraphId, getGraphList } from '../../reducers';
 import ActiveGraphTab from './ActiveGraphTab';
 import GraphTab from './GraphTab';
+import './graphList.css';
 
 GraphList.propTypes = {
   activeProjectName: PropTypes.string.isRequired,
@@ -38,15 +41,23 @@ function GraphList({
   openUpdateGraphModal
 }) {
   return (
-    <ListGroup>
-      <ListGroupItem>
-        {`Project name: ${activeProjectName}`}
-        <Button color="primary" block onClick={openCreateGraphModal} className="mt-2">
-          Create graph
-        </Button>
-      </ListGroupItem>
-      {renderGraphList()}
-    </ListGroup>
+    <>
+      <Card>
+        <CardHeader>Your Active Project</CardHeader>
+        <CardBody>
+          <CardTitle>{activeProjectName}</CardTitle>
+        </CardBody>
+      </Card>
+      <Card className="mt-2">
+        <CardHeader>
+          Your Graphs
+          <Button close onClick={openCreateGraphModal} size="sm">
+            <span className="oi oi-plus graph-panel-icon" aria-hidden="true" />
+          </Button>
+        </CardHeader>
+        {renderGraphList()}
+      </Card>
+    </>
   );
 
   function renderGraphList() {
