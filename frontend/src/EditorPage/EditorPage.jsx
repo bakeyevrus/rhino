@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Container, Row, Col } from 'reactstrap';
 import { projectActions } from '../actions';
 import { isLoggedIn, getActiveProjectId, getActiveProject } from '../reducers';
 import AppBar from '../components/AppBar';
-import WelcomePage from './WelcomePage';
-import CytoscapeEngine from './cytoscape/CytoscapeEngine';
+import SelectProjectBanner from './SelectProjectBanner';
+import LeftPanel from './LeftPanel';
+import Editor from './Editor';
 
 function EditorPage({
   activeProjectId, project, loggedIn, fetchProject
@@ -15,14 +17,28 @@ function EditorPage({
       fetchProject(activeProjectId);
     }
   }, [activeProjectId, fetchProject]);
-
   return (
     <>
       <AppBar loggedIn={loggedIn} />
-      {project.id != null && <CytoscapeEngine />}
-      {project.id == null && <WelcomePage />}
+      {project.id == null && <SelectProjectBanner />}
+      {project.id != null && renderEditorContent()}
     </>
   );
+
+  function renderEditorContent() {
+    return (
+      <Container fluid className="mt-2">
+        <Row>
+          <Col lg={2}>
+            <LeftPanel />
+          </Col>
+          <Col lg={10}>
+            <Editor />
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
 }
 
 function mapStateToProps(state) {

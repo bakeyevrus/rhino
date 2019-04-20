@@ -6,11 +6,11 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
-    "cytoscape": "^3.2.17",
-    "cytoscape-context-menus": "^3.0.5",
-    "cytoscape-edgehandles": "^3.2.4",
-    "cytoscape-panzoom": "^2.5.2",
-    "eslint-plugin-react-hooks": "^1.6.0",
+    "cytoscape": "3.5.2",
+    "cytoscape-context-menus": "^3.0.6",
+    "cytoscape-edgehandles": "^3.5.1",
+    "cytoscape-grid-guide": "^2.2.1",
+    "cytoscape-panzoom": "^2.5.3",
     "jquery": "^3.3.1",
     "lodash.debounce": "^4.0.8",
     "lodash.isempty": "^4.4.0",
@@ -38,7 +38,8 @@
   },
   "devDependencies": {
     "eslint": "5.12.0",
-    "eslint-config-airbnb": "^17.1.0"
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-react-hooks": "^1.6.0"
   },
   "browserslist": [
     ">0.2%",

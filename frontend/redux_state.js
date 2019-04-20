@@ -21,13 +21,14 @@ const stateExample = {
   auth: {
     authenticating: false,
     loggedIn: false,
-    errMsg: null
+    errMessage: null
   },
   modal: {
     // ...modalProps
   },
   projects: {
-    requestPending: false,
+    loading: false,
+    errorMessage: null,
     activeProjectId: 'prj1',
     byId: {
       prj1: { id: 'prj1', name: 'Project1' },
@@ -38,8 +39,18 @@ const stateExample = {
   graphs: {
     activeGraphId: 'graph1',
     byId: {
-      graph1: { id: 'graph1', name: 'Graph1', editorState: {} },
-      graph2: { id: 'graph2', name: 'Graph2', editorState: {} }
+      graph1: {
+        id: 'graph1',
+        name: 'Graph1',
+        type: 'State machine',
+        editorState: {}
+      },
+      graph2: {
+        id: 'graph2',
+        name: 'Graph2',
+        type: 'Flow',
+        editorState: {}
+      }
     }
   }
 };

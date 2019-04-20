@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import {
   Card, CardHeader, CardBody, CardTitle, Button
 } from 'reactstrap';
-import { modalActions, graphActions } from '../../actions';
-import { modalTypes } from '../../const';
-import { getActiveProject, getActiveGraphId, getGraphList } from '../../reducers';
+import { modalActions, graphActions } from '../actions';
+import { modalTypes } from '../const';
+import { getActiveProject, getActiveGraphId, getGraphList } from '../reducers';
 import ActiveGraphTab from './ActiveGraphTab';
 import GraphTab from './GraphTab';
-import './graphList.css';
+import './leftPanel.css';
 
-GraphList.propTypes = {
+LeftPanel.propTypes = {
   activeProjectName: PropTypes.string.isRequired,
   selectGraph: PropTypes.func.isRequired,
   deleteGraph: PropTypes.func.isRequired,
@@ -26,12 +26,12 @@ GraphList.propTypes = {
   )
 };
 
-GraphList.defaultProps = {
+LeftPanel.defaultProps = {
   activeGraphId: null,
   graphs: []
 };
 
-function GraphList({
+function LeftPanel({
   activeProjectName,
   activeGraphId,
   graphs,
@@ -127,4 +127,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(GraphList);
+)(LeftPanel);
