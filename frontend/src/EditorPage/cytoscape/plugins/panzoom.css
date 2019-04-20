@@ -1,0 +1,10 @@
+.panzoom-icon {
+  /* Override default .oi rule: `top: 1px` */
+  top: 0px;
+}
+
+.cy-panzoom {
+  /* Panzoom overlaps with MyProjects dropdown. Default value is 9999, 
+  Note, that cytoscape editor has z-index 0 and gridGuide plugin 4 */
+  z-index: 5;
+}

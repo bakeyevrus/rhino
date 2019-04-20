@@ -67,6 +67,7 @@ export default rootReducer;
 export const isLoggedIn = state => fromAuth.isLoggedIn(state.auth);
 
 // Graphs
+export const getActiveGraph = state => fromGraphs.getActiveGraph(state.graphs);
 export const getGraphList = state => fromGraphs.getGraphList(state.graphs);
 export const getActiveGraphId = state => fromGraphs.getActiveGraphId(state.graphs);
 export const getGraphById = (state, id) => fromGraphs.getGraphById(state.graphs, id);
