@@ -20,11 +20,16 @@ function init(cy) {
     return configChanges;
   }
 
+  function getInstance() {
+    return instance;
+  }
+
   function destroy() {
     instance.destroy();
   }
 
   return {
+    getInstance,
     destroy
   };
 }

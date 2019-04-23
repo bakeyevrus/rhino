@@ -47,13 +47,18 @@ const config = {
 };
 
 function init(cy) {
-  cy.getNativeInstance().panzoom(config);
+  const instance = cy.getNativeInstance().panzoom(config);
+
+  function getInstance() {
+    return instance;
+  }
 
   function destroy() {
     cy.getNativeInstance().panzoom('destroy');
   }
 
   return {
+    getInstance,
     destroy
   };
 }

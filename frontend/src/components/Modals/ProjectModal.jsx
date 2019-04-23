@@ -17,6 +17,35 @@ import {
 import { getProjectById, isProjectLoading, getProjectErrorMessage } from '../../reducers';
 import { projectActions as actions } from '../../actions';
 
+ProjectModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  project: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string
+  }),
+  createProject: PropTypes.func,
+  updateProject: PropTypes.func,
+  errorMessage: PropTypes.string,
+  loading: PropTypes.bool
+};
+
+ProjectModal.defaultProps = {
+  project: {
+    id: null,
+    name: '',
+    description: ''
+  },
+  createProject: () => {
+    throw new Error('You are calling createProject() from update project modal');
+  },
+  updateProject: () => {
+    throw new Error('You are calling updateProject() from create project modal');
+  },
+  loading: false,
+  errorMessage: null
+};
+
 function ProjectModal({
   project, createProject, updateProject, loading, errorMessage, onClose
 }) {
@@ -101,35 +130,6 @@ function useFormInput(initValue) {
 
   return [value, handleFormChange];
 }
-
-ProjectModal.defaultProps = {
-  project: {
-    id: null,
-    name: '',
-    description: ''
-  },
-  createProject: () => {
-    throw new Error('You are calling createProject() from update project modal');
-  },
-  updateProject: () => {
-    throw new Error('You are calling updateProject() from create project modal');
-  },
-  loading: false,
-  errorMessage: null
-};
-
-ProjectModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  project: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    description: PropTypes.string
-  }),
-  createProject: PropTypes.func,
-  updateProject: PropTypes.func,
-  errorMessage: PropTypes.string,
-  loading: PropTypes.bool
-};
 
 function mapStateToProps(state, ownProps) {
   const loading = isProjectLoading(state);

@@ -49,7 +49,9 @@ GraphModal.defaultProps = {
 function GraphModal({
   graph, createGraph, updateGraph, loading, errorMessage, onClose
 }) {
-  const { id, name: initName, type: initType } = graph;
+  const {
+    id, name: initName, type: initType, ...restAttributes
+  } = graph;
   const isCreate = id === null;
   const [name, setName] = useFormInput(initName);
   const [type, setType] = useFormInput(initType);
@@ -111,7 +113,8 @@ function GraphModal({
 
     const newGraph = {
       name,
-      type
+      type,
+      ...restAttributes
     };
 
     if (isCreate) {

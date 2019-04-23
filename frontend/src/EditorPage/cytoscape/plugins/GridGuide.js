@@ -14,13 +14,18 @@ const config = {
 };
 
 function init(cy) {
-  cy.getNativeInstance().gridGuide(config);
+  const instance = cy.getNativeInstance().gridGuide(config);
+
+  function getInstance() {
+    return instance;
+  }
 
   function destroy() {
     cy.getNativeInstance().gridGuide('destroy');
   }
 
   return {
+    getInstance,
     destroy
   };
 }

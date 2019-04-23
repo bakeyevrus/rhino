@@ -10,6 +10,8 @@ class CytoscapeCore {
 
   cy = null;
 
+  plugins = [];
+
   constructor(container, elements) {
     if (container == null) {
       throw new Error('Container for cytoscape instance is null');
@@ -31,9 +33,23 @@ class CytoscapeCore {
   }
 
   destroy() {
+    this.plugins.forEach(plugin => plugin.destroy());
     this.cy.destroy();
   }
 
+  /**
+   * Verifies if cytoscape node or edge has been clicked.
+   * Note, that method filters out all non-native cytoscape elements like edgehandle nodes, etc...
+   * @param {*} element - element to test
+   */
+  isElement(element) {
+    return element !== this.cy && element.data('name');
+  }
+
+  /**
+   * Validate name for duplication
+   * @param {string} elementName - element name to validate
+   */
   isNameValid(elementName) {
     return this.cy.filter(`[name = "${elementName}"]`).size() === 0;
   }
@@ -78,8 +94,34 @@ class CytoscapeCore {
     return name;
   }
 
+  /**
+   * Get an element data from its ID
+   * @param {string} id
+   */
+  getElementDataById(id) {
+    return this.cy.getElementById(id).data();
+  }
+
   removeAllSelected() {
     this.cy.$(':selected').remove();
+  }
+
+  /**
+   * Removes element attribute and returns updated element attributes.
+   * If id refers to non-existing element, returns null
+   *
+   * @param {string} id - id of the element to remove attribute from
+   * @param {string} attrName  - name of the element attribute to remove
+   */
+  removeAttribute(id, attrName) {
+    const targetElement = this.cy.getElementById(id);
+    if (targetElement == null) {
+      console.warn(`Element with id ${id} doesn't exist in cytoscape`);
+      return null;
+    }
+    targetElement.removeData(attrName);
+
+    return targetElement.data();
   }
 
   removeElement(element) {
@@ -114,6 +156,33 @@ class CytoscapeCore {
 
   selectAll() {
     this.select('*');
+  }
+
+  setPlugins(plugins) {
+    this.plugins = plugins;
+  }
+
+  /**
+   * Updates element attribute and returns updated element attributes.
+   * If id refers to non-existing element, returns null
+   *
+   * @param {string} id - id of the element to update
+   * @param {string} attrName  - name of the element attribute to update
+   * @param {string | number} attrValue - value of the element attribute to set
+   */
+  updateElementData(id, attrName, attrValue) {
+    const targetElement = this.cy.getElementById(id);
+    if (targetElement == null) {
+      console.warn(`Element with id ${id} doesn't exist in cytoscape`);
+      return null;
+    }
+
+    targetElement.data(attrName, attrValue);
+    if (targetElement.isNode() && attrName === 'name') {
+      targetElement.outgoers('edge').forEach(outEdge => outEdge.data('from', attrValue));
+      targetElement.incomers('edge').forEach(inEdge => inEdge.data('to', attrValue));
+    }
+    return targetElement.data();
   }
 
   createConfig(container, elements) {
@@ -162,8 +231,6 @@ class CytoscapeCore {
             'line-color': '#ff4545'
           }
         },
-        // TODO: should plugin itself provide styles via cy.style().update()
-        // or cytoscape core should know about it plugins?
         // Edgehandle styling
         {
           selector: '.eh-handle',
