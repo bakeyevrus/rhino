@@ -4,14 +4,14 @@ export const PRIORITY = {
   HIGH: 'High'
 };
 
-export const ATTRIBUTE_FORM_OPTIONS = {
+export const ELEMENT_ATTRIBUTES = {
   NAME: 'name',
   PRIORITY: 'priority',
   FROM: 'from',
   TO: 'to'
 };
 
-export const ATTRIBUTE_FORM_CUSTOM_OPTIONS = {
+export const CUSTOM_ELEMENT_ATTRIBUTES = {
   WEIGHT: 'weight',
   PROBABILITY: 'probability',
   RADIUS: 'radius'

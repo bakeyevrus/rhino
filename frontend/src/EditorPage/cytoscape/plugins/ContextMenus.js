@@ -7,7 +7,7 @@ cytoscape.use(contextMenus, $);
 
 function init(cy) {
   const config = createConfig();
-  cy.getNativeInstance().contextMenus(config);
+  const instance = cy.getNativeInstance().contextMenus(config);
 
   function createConfig() {
     const menuOptions = {
@@ -80,11 +80,16 @@ function init(cy) {
     return menuOptions;
   }
 
+  function getInstance() {
+    return instance;
+  }
+
   function destroy() {
     cy.getNativeInstance().contextMenus('destroy');
   }
 
   return {
+    getInstance,
     destroy
   };
 }
