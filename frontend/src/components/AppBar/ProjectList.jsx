@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import ProjectTab from './ProjectTab';
 import { modalActions, projectActions } from '../../actions';
-import { modalTypes } from '../../const';
+import { modalTypes } from '../../constants';
 import { getProjectList, isProjectLoading, getActiveProjectId } from '../../reducers';
 
 ProjectList.propTypes = {

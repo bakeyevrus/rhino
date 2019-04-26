@@ -1,6 +1,7 @@
 import { projectService } from '../services';
-import { projectActionTypes } from '../const';
+import { projectActionTypes } from '../constants';
 import modalActions from './modal.actions';
+import { error, request } from './helpers';
 
 const {
   FETCH_PROJECT_LIST,
@@ -93,19 +94,6 @@ function deleteProject(id) {
       },
       errMessage => dispatch(error(DELETE_PROJECT, { errMessage }))
     );
-  };
-}
-
-function request(actionType) {
-  return {
-    type: `${actionType}_REQUEST`
-  };
-}
-
-function error(actionType, actionPayload) {
-  return {
-    type: `${actionType}_ERROR`,
-    ...actionPayload
   };
 }
 

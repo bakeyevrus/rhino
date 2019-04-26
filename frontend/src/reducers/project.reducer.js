@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { projectActionTypes as projectActions } from '../const';
+import { projectActionTypes as projectActions } from '../constants';
 import createLoaderReducer from './loader.reducer';
 import createErrorMessageReducer from './error.reducer';
 

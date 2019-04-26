@@ -3,7 +3,7 @@ import Panzoom from './plugins/Panzoom';
 import ContextMenus from './plugins/ContextMenus';
 import Edgehandles from './plugins/Edgehandles';
 import GridGuide from './plugins/GridGuide';
-import { graphTypes } from '../../const';
+import { graphTypes } from '../../constants';
 
 const { FLOW } = graphTypes;
 /**

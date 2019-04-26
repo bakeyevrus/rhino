@@ -1,4 +1,4 @@
-import { graphActionTypes, modalTypes } from '../const';
+import { graphActionTypes, modalTypes } from '../constants';
 import { graphService } from '../services';
 import { request, error } from './helpers';
 import modalActions from './modal.actions';

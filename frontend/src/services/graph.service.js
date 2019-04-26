@@ -1,4 +1,4 @@
-import { graphTypes } from '../const';
+import { graphTypes } from '../constants';
 
 const graphService = {
   createGraph,
