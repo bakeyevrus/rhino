@@ -5,6 +5,7 @@ export const modalActionTypes = {
 
 export const modalTypes = {
   ALERT: 'ALERT',
+  NOTIFICATION: 'NOTIFICATION',
   PROJECT: 'PROJECT',
   GRAPH: 'GRAPH'
 };

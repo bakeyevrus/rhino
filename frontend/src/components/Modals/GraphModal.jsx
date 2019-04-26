@@ -34,6 +34,7 @@ GraphModal.defaultProps = {
   graph: {
     id: null,
     name: '',
+    elements: {},
     type: graphTypes.FLOW
   },
   createGraph: () => {

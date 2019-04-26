@@ -79,6 +79,60 @@ class CytoscapeCore {
     };
   }
 
+  /**
+   * Returns only 'native' cytoscape edges and nodes
+   * (ex. edgehandles intermediate nodes are filtered out)
+   */
+  getAllElements() {
+    const rawElements = this.cy.json().elements;
+    const filteredElements = filterOutEdgehandles(rawElements);
+
+    return filteredElements;
+
+    // TODO: find better solution how to deal with edgehandles.
+    function filterOutEdgehandles(elements) {
+      /*
+       * 1. Only elements with 'name' attribute should remain in the list
+       * (this will filter out all edgehandle stuff)
+       * 2. Remove all the classes with pattern below on remaining nodes
+       */
+      let { edges, nodes } = elements;
+      if (nodes != null) {
+        nodes = nodes.filter(node => node.data.name != null).map(removeForbiddenClasses);
+      }
+      if (edges != null) {
+        edges = edges.filter(edge => edge.data.name != null).map(removeForbiddenClasses);
+      }
+
+      return {
+        ...elements,
+        edges,
+        nodes
+      };
+
+      function removeForbiddenClasses(element) {
+        const pattern = /(?:eh-handle|eh-source|eh-target|eh-preview|eh-hover|eh-ghost-edge|eh-presumptive-target|eh-preview-active|)/g;
+        const { classes } = element;
+        if (classes == null || classes.length === 0) {
+          return element;
+        }
+        const filteredClasses = classes.replace(pattern, '').trim();
+        return {
+          ...element,
+          classes: filteredClasses
+        };
+      }
+    }
+  }
+
+  /**
+   * Get an element data from its ID
+   * @param {string} id
+   */
+  getElementDataById(id) {
+    return this.cy.getElementById(id).data();
+  }
+
   getNativeInstance() {
     return this.cy;
   }
@@ -95,11 +149,17 @@ class CytoscapeCore {
   }
 
   /**
-   * Get an element data from its ID
-   * @param {string} id
+   * Gets plugin instance in the registered plugins list
+   * @param {string} name - name of the plugin to search for
    */
-  getElementDataById(id) {
-    return this.cy.getElementById(id).data();
+  getPlugin(name) {
+    const registeredPlugin = this.plugins.find(plugin => plugin.getName() === name);
+    if (registeredPlugin == null) {
+      console.warn(`Plugin ${name} is not registered`);
+      return null;
+    }
+
+    return registeredPlugin.getInstance();
   }
 
   removeAllSelected() {
@@ -275,6 +335,9 @@ class CytoscapeCore {
           }
         }
       ],
+      layout: {
+        name: 'preset'
+      },
       userZoomingEnabled: false
     };
     this.config = {

@@ -12,9 +12,13 @@ const config = {
   snapToGridOnRelease: false,
   gridSpacing: 30
 };
-
+export const PLUGIN_NAME = 'GridGuide';
 function init(cy) {
   const instance = cy.getNativeInstance().gridGuide(config);
+
+  function getName() {
+    return PLUGIN_NAME;
+  }
 
   function getInstance() {
     return instance;
@@ -26,7 +30,8 @@ function init(cy) {
 
   return {
     getInstance,
-    destroy
+    destroy,
+    getName
   };
 }
 
