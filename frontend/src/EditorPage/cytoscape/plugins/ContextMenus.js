@@ -4,7 +4,7 @@ import contextMenus from 'cytoscape-context-menus';
 import 'cytoscape-context-menus/cytoscape-context-menus.css';
 
 cytoscape.use(contextMenus, $);
-
+export const PLUGIN_NAME = 'ContextMenus';
 function init(cy) {
   const config = createConfig();
   const instance = cy.getNativeInstance().contextMenus(config);
@@ -80,6 +80,10 @@ function init(cy) {
     return menuOptions;
   }
 
+  function getName() {
+    return PLUGIN_NAME;
+  }
+
   function getInstance() {
     return instance;
   }
@@ -90,7 +94,8 @@ function init(cy) {
 
   return {
     getInstance,
-    destroy
+    destroy,
+    getName
   };
 }
 

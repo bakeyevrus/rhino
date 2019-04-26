@@ -20,3 +20,5 @@ function modal(state = initialState, action) {
 }
 
 export default modal;
+
+export const getModalState = state => state;

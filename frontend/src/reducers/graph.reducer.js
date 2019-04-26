@@ -4,7 +4,7 @@ import createLoaderReducer from './loader.reducer';
 import createErrorMessageReducer from './error.reducer';
 
 const {
-  CREATE_GRAPH, UPDATE_GRAPH, SWITCH_GRAPH, DELETE_GRAPH
+  CREATE_GRAPH, UPDATE_GRAPH, SELECT_GRAPH, DELETE_GRAPH
 } = graphActionTypes;
 
 const mockGraphs = {
@@ -189,7 +189,29 @@ const mockGraphs = {
     id: 'graph2',
     name: 'Graph2',
     type: graphTypes.FLOW,
-    elements: {}
+    elements: {
+      nodes: [
+        {
+          data: {
+            name: 'a',
+            priority: 'Medium',
+            id: '5b565ee8-f268-4666-802c-7ae3f90d6284'
+          },
+          position: {
+            x: 376.9012968564243,
+            y: 137.96386993683436
+          },
+          group: 'nodes',
+          removed: false,
+          selected: false,
+          selectable: true,
+          locked: false,
+          grabbable: true,
+          classes: ''
+        }
+      ],
+      edges: []
+    }
   }
 };
 
@@ -197,6 +219,16 @@ function byId(state = mockGraphs, action) {
   switch (action.type) {
     case CREATE_GRAPH:
     case UPDATE_GRAPH:
+      /**
+        * Important note:
+        * If we start deep copying of properties like in the snippet bellow,
+        * then we start getting re-creating new instance of Editor.jsx on every state
+        * update, since elements will start pointing on new object every time
+          [action.graph.id]: {
+          ...action.graph,
+          elements: { ...action.graph.elements }
+        }
+      */
       return {
         ...state,
         [action.graph.id]: action.graph
@@ -214,7 +246,7 @@ function byId(state = mockGraphs, action) {
 const initGraphId = localStorage.getItem('activeGraphId');
 function activeGraphId(state = initGraphId, action) {
   switch (action.type) {
-    case SWITCH_GRAPH:
+    case SELECT_GRAPH:
       return action.id;
     case CREATE_GRAPH:
     case UPDATE_GRAPH:
@@ -226,8 +258,18 @@ function activeGraphId(state = initGraphId, action) {
   }
 }
 
-const loading = createLoaderReducer({ ...graphActionTypes });
-const errorMessage = createErrorMessageReducer({ ...graphActionTypes });
+const loading = createLoaderReducer({
+  CREATE_GRAPH,
+  UPDATE_GRAPH,
+  SELECT_GRAPH,
+  DELETE_GRAPH
+});
+const errorMessage = createErrorMessageReducer({
+  CREATE_GRAPH,
+  UPDATE_GRAPH,
+  SELECT_GRAPH,
+  DELETE_GRAPH
+});
 
 export const getActiveGraphId = state => state.activeGraphId;
 export const getActiveGraph = (state) => {

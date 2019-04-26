@@ -6,7 +6,12 @@ import {
 } from 'reactstrap';
 import { modalActions, graphActions } from '../actions';
 import { modalTypes } from '../const';
-import { getActiveProject, getActiveGraphId, getGraphList } from '../reducers';
+import {
+  getActiveProject,
+  getActiveGraphId,
+  getGraphList,
+  isGraphSavingInBackground
+} from '../reducers';
 import ActiveGraphTab from './ActiveGraphTab';
 import GraphTab from './GraphTab';
 import './leftPanel.css';
@@ -15,9 +20,11 @@ LeftPanel.propTypes = {
   activeProjectName: PropTypes.string.isRequired,
   selectGraph: PropTypes.func.isRequired,
   deleteGraph: PropTypes.func.isRequired,
+  saveGraph: PropTypes.func.isRequired,
   openCreateGraphModal: PropTypes.func.isRequired,
   openUpdateGraphModal: PropTypes.func.isRequired,
   activeGraphId: PropTypes.string,
+  isGraphSaving: PropTypes.bool,
   graphs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -28,6 +35,7 @@ LeftPanel.propTypes = {
 
 LeftPanel.defaultProps = {
   activeGraphId: null,
+  isGraphSaving: false,
   graphs: []
 };
 
@@ -35,7 +43,9 @@ function LeftPanel({
   activeProjectName,
   activeGraphId,
   graphs,
+  isGraphSaving,
   selectGraph,
+  saveGraph,
   deleteGraph,
   openCreateGraphModal,
   openUpdateGraphModal
@@ -73,8 +83,10 @@ function LeftPanel({
         id: graph.id,
         name: graph.name,
         onSelectClick: isActive ? undefined : selectGraph,
+        onSaveClick: isActive ? saveGraph : undefined,
         onEditClick: isActive ? openUpdateGraphModal : undefined,
-        onDeleteClick: isActive ? deleteGraph : undefined
+        onDeleteClick: isActive ? deleteGraph : undefined,
+        isGraphSaving
       };
 
       return <GraphTabItem {...graphTabProps} />;
@@ -87,13 +99,13 @@ function mapStateToProps(state) {
   return {
     activeProjectName,
     graphs: getGraphList(state),
-    activeGraphId: getActiveGraphId(state)
+    activeGraphId: getActiveGraphId(state),
+    isGraphSaving: isGraphSavingInBackground(state)
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    selectGraph: id => dispatch(graphActions.switchGraph(id)),
     openCreateGraphModal: () => dispatch(
       modalActions.showModal({
         modalType: modalTypes.GRAPH

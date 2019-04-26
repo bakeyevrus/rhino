@@ -4,8 +4,21 @@ import {
   Collapse, Card, CardBody, CardTitle, Button, ListGroup, ListGroupItem
 } from 'reactstrap';
 
+ActiveGraphTab.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  onEditClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  onSaveClick: PropTypes.func.isRequired,
+  isGraphSaving: PropTypes.bool
+};
+
+ActiveGraphTab.defaultProps = {
+  isGraphSaving: false
+};
+
 function ActiveGraphTab({
-  id, name, onEditClick, onDeleteClick
+  id, name, onEditClick, onDeleteClick, onSaveClick, isGraphSaving
 }) {
   const [listOpen, setListOpen] = useState(false);
   return (
@@ -13,9 +26,9 @@ function ActiveGraphTab({
       <CardBody>
         <CardTitle
           className="d-flex justify-content-between align-items-center active-graph-title"
-          tag="h4"
+          tag="h5"
         >
-          {name}
+          <b>{name}</b>
           <div>
             <Button close onClick={handleDeleteClick} size="sm" className="ml-2">
               <span className="oi oi-delete graph-panel-icon" aria-hidden="true" />
@@ -25,6 +38,9 @@ function ActiveGraphTab({
             </Button>
           </div>
         </CardTitle>
+        <Button block size="sm" color="primary" disabled={isGraphSaving} onClick={handleSaveClick}>
+          Save graph
+        </Button>
         <Button block size="sm">
           New TDL
         </Button>
@@ -54,13 +70,11 @@ function ActiveGraphTab({
     event.preventDefault();
     onDeleteClick(id, name);
   }
-}
 
-ActiveGraphTab.propTypes = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  onEditClick: PropTypes.func.isRequired,
-  onDeleteClick: PropTypes.func.isRequired
-};
+  function handleSaveClick(event) {
+    event.preventDefault();
+    onSaveClick();
+  }
+}
 
 export default ActiveGraphTab;

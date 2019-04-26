@@ -32,7 +32,7 @@ function createGraph(graph) {
     throw new Error('Graph name is empty!');
   }
 
-  return timeout(2).then(() => ({ id: generateId(), ...graph }));
+  return timeout(2).then(() => ({ id: generateId(), elements: {}, ...graph }));
 }
 
 function deleteGraph(id) {
@@ -44,13 +44,17 @@ function deleteGraph(id) {
 }
 
 function updateGraph(graph) {
-  const { name, type } = graph;
-  if (name === null || !valueExists(graphTypes, type)) {
+  const { id, name, type } = graph;
+  console.log(graph);
+  if (id === null || name === null || !valueExists(graphTypes, type)) {
     console.error(graph);
-    throw new Error('Either graph name is null or type invalid');
+    throw new Error('Either graph id or name is null, or type invalid');
   }
 
   return timeout(2).then(() => graph);
+  // .then(() => {
+  //   throw new Error('Test message');
+  // });
 
   function valueExists(obj, value) {
     return Object.keys(obj).some(key => obj[key] === value);

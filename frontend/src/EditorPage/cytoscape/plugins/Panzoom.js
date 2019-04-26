@@ -45,9 +45,13 @@ const config = {
   zoomOutIcon: 'oi oi-minus panzoom-icon',
   resetIcon: 'oi oi-resize-both panzoom-icon'
 };
-
+export const PLUGIN_NAME = 'Panzoom';
 function init(cy) {
   const instance = cy.getNativeInstance().panzoom(config);
+
+  function getName() {
+    return PLUGIN_NAME;
+  }
 
   function getInstance() {
     return instance;
@@ -59,7 +63,8 @@ function init(cy) {
 
   return {
     getInstance,
-    destroy
+    destroy,
+    getName
   };
 }
 

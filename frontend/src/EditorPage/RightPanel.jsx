@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import SelectedElementCard from './SelectedElementCard';
+import EditorStatusCard from './EditorStatusCard';
 
 RightPanel.propTypes = {
   selectedElement: PropTypes.shape({
@@ -23,6 +24,7 @@ function RightPanel({
 }) {
   return (
     <>
+      <EditorStatusCard />
       {selectedElement && (
         <SelectedElementCard
           /* Key is essential here, otherwise re-selecting element in editor will just update props,
