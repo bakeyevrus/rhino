@@ -15,7 +15,7 @@ import {
 } from 'reactstrap';
 import { getGraphById, getGraphErrorMessage, isGraphLoading } from '../../reducers';
 import { graphActions as actions } from '../../actions';
-import { graphTypes } from '../../const';
+import { graphTypes } from '../../constants';
 
 GraphModal.propTypes = {
   onClose: PropTypes.func.isRequired,

@@ -1,4 +1,4 @@
-import { modalActionTypes } from '../const';
+import { modalActionTypes } from '../constants';
 
 const { SHOW_MODAL, HIDE_MODAL } = modalActionTypes;
 

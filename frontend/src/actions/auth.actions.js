@@ -1,5 +1,5 @@
 import { authService } from '../services';
-import { authActionTypes } from '../const';
+import { authActionTypes } from '../constants';
 
 const {
   AUTH_REQUEST, AUTH_SUCCESS, AUTH_ERROR, AUTH_LOGOUT

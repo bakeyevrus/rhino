@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getModalState } from '../../reducers';
 import { modalActions } from '../../actions';
-import { modalTypes } from '../../const';
+import { modalTypes } from '../../constants';
 import Alert from './AlertModal';
 import Notification from './NotificationModal';
 import Project from './ProjectModal';

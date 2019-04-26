@@ -5,7 +5,7 @@ import {
   Card, CardHeader, CardBody, CardTitle, Button
 } from 'reactstrap';
 import { modalActions, graphActions } from '../actions';
-import { modalTypes } from '../const';
+import { modalTypes } from '../constants';
 import {
   getActiveProject,
   getActiveGraphId,

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { authActionTypes } from '../const';
+import { authActionTypes } from '../constants';
 
 const {
   AUTH_SUCCESS, AUTH_ERROR, AUTH_REQUEST, AUTH_LOGOUT

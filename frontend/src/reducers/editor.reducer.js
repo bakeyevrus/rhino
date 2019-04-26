@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { graphActionTypes } from '../const';
+import { graphActionTypes } from '../constants';
 import createErrorReducer from './error.reducer';
 import createLoaderReducer from './loader.reducer';
 
