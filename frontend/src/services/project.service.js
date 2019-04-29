@@ -27,7 +27,8 @@ function getById(projectId) {
   return axios.get(`/api/v1/project/${projectId}`, { headers: getAuthHeader() }).then((response) => {
     if (response.status === 200) {
       const project = response.data;
-      return project;
+      const graphs = normalizeResponse(project.graphs);
+      return { ...project, graphs };
     }
 
     logDifferentResponseStatus(response, 200);
@@ -81,8 +82,13 @@ function deleteById(projectId) {
     }, handleErrorResponse);
 }
 
-function normalizeResponse(projectList) {
-  return projectList.reduce(
+/**
+ * Normalizes response,
+ * for ex. [{id: 1, name: 'My Graph'}] is transformed into {1: {id: 1, name: 'My Graph'}}
+ * @param {Object[]} responseEntity - response attribute/entity to transform
+ */
+function normalizeResponse(responseEntity) {
+  return responseEntity.reduce(
     (accumulator, project) => ({ ...accumulator, [project.id]: project }),
     {}
   );

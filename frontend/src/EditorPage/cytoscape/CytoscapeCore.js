@@ -96,19 +96,20 @@ class CytoscapeCore {
        * (this will filter out all edgehandle stuff)
        * 2. Remove all the classes with pattern below on remaining nodes
        */
-      let { edges, nodes } = elements;
+      const newElements = { ...elements };
+      const { edges, nodes } = newElements;
       if (nodes != null) {
-        nodes = nodes.filter(node => node.data.name != null).map(removeForbiddenClasses);
+        newElements.nodes = nodes
+          .filter(node => node.data.name != null)
+          .map(removeForbiddenClasses);
       }
       if (edges != null) {
-        edges = edges.filter(edge => edge.data.name != null).map(removeForbiddenClasses);
+        newElements.edges = edges
+          .filter(edge => edge.data.name != null)
+          .map(removeForbiddenClasses);
       }
 
-      return {
-        ...elements,
-        edges,
-        nodes
-      };
+      return newElements;
 
       function removeForbiddenClasses(element) {
         const pattern = /(?:eh-handle|eh-source|eh-target|eh-preview|eh-hover|eh-ghost-edge|eh-presumptive-target|eh-preview-active|)/g;

@@ -13,12 +13,18 @@ import {
   Input,
   Alert
 } from 'reactstrap';
-import { getGraphById, getGraphErrorMessage, isGraphLoading } from '../../reducers';
+import {
+  getGraphById,
+  getGraphErrorMessage,
+  isGraphLoading,
+  getActiveProjectId
+} from '../../reducers';
 import { graphActions as actions } from '../../actions';
 import { graphTypes } from '../../constants';
 
 GraphModal.propTypes = {
   onClose: PropTypes.func.isRequired,
+  activeProjectId: PropTypes.string.isRequired,
   graph: PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string,
@@ -34,7 +40,7 @@ GraphModal.defaultProps = {
   graph: {
     id: null,
     name: '',
-    elements: {},
+    elements: null,
     type: graphTypes.FLOW
   },
   createGraph: () => {
@@ -48,7 +54,13 @@ GraphModal.defaultProps = {
 };
 
 function GraphModal({
-  graph, createGraph, updateGraph, loading, errorMessage, onClose
+  activeProjectId,
+  graph,
+  createGraph,
+  updateGraph,
+  loading,
+  errorMessage,
+  onClose
 }) {
   const {
     id, name: initName, type: initType, ...restAttributes
@@ -119,7 +131,7 @@ function GraphModal({
     };
 
     if (isCreate) {
-      createGraph(newGraph);
+      createGraph(newGraph, activeProjectId);
     } else {
       newGraph.id = id;
       updateGraph(newGraph);
@@ -140,7 +152,8 @@ function useFormInput(initValue) {
 function mapStateToProps(state, ownProps) {
   const loading = isGraphLoading(state);
   const errorMessage = getGraphErrorMessage(state);
-  const newProps = { loading, errorMessage };
+  const activeProjectId = getActiveProjectId(state);
+  const newProps = { loading, errorMessage, activeProjectId };
   if (ownProps.graphId != null) {
     newProps.graph = getGraphById(state, ownProps.graphId);
   }
@@ -152,7 +165,7 @@ function mapDispatchToProps(dispatch, ownProps) {
   const { graphId } = ownProps;
   if (graphId == null) {
     return {
-      createGraph: newGraph => dispatch(actions.createGraph(newGraph))
+      createGraph: (newGraph, projectId) => dispatch(actions.createGraph(newGraph, projectId))
     };
   }
 
