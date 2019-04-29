@@ -43,7 +43,7 @@ class CytoscapeCore {
    * @param {*} element - element to test
    */
   isElement(element) {
-    return element !== this.cy && element.data('name');
+    return element != null && element !== this.cy && element.data('name');
   }
 
   /**
@@ -55,10 +55,11 @@ class CytoscapeCore {
   }
 
   generateEdgeParams(srcNode, targetNode) {
+    const isNode = false;
     return {
       group: 'edges',
       data: {
-        name: this.getNextName(false),
+        name: this.getNextName(isNode),
         source: srcNode.id(),
         target: targetNode.id(),
         from: srcNode.data('name'),
@@ -69,11 +70,15 @@ class CytoscapeCore {
   }
 
   generateNodeParams(x, y) {
+    const isNode = true;
+    const isFirstNode = this.cy.nodes().size() === 0;
+
     return {
       group: 'nodes',
       data: {
-        name: this.getNextName(true),
-        priority: PRIORITY.LOW
+        name: this.getNextName(isNode),
+        priority: PRIORITY.LOW,
+        startNode: isFirstNode
       },
       position: { x, y }
     };
@@ -186,7 +191,17 @@ class CytoscapeCore {
   }
 
   removeElement(element) {
+    if (!this.isElement(element)) {
+      return;
+    }
+
     this.cy.remove(element);
+
+    // Assign new start node
+    if (element.isNode() && element.data('startNode')) {
+      const nextNode = this.cy.nodes()[0];
+      this.setStartNode(nextNode);
+    }
   }
 
   select(selector = '*') {
@@ -221,6 +236,27 @@ class CytoscapeCore {
 
   setPlugins(plugins) {
     this.plugins = plugins;
+  }
+
+  /**
+   * Sets 'startNode' parameter to true for provided node and removes
+   * this parameter from last start node.
+   * Note, that all edgehandles elements are filtered out
+   * @param {any} node  - target node to mark as start node
+   */
+  setStartNode(node) {
+    if (this.isElement(node) && node.isNode()) {
+      this.unsetStartNode();
+      node.data('startNode', true);
+    }
+  }
+
+  /**
+   * Finds start node and removes 'startNode' attribute from it
+   */
+  unsetStartNode() {
+    const startNode = this.cy.elements('node[?startNode]');
+    startNode.data('startNode', false);
   }
 
   /**
@@ -269,6 +305,12 @@ class CytoscapeCore {
           selector: 'node[name], edge[name]',
           style: {
             content: 'data(name)'
+          }
+        },
+        {
+          selector: 'node[?startNode]',
+          style: {
+            shape: 'star'
           }
         },
         {

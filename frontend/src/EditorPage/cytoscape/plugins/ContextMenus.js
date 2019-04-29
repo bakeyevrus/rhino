@@ -21,6 +21,15 @@ function init(cy) {
           hasTrailingDivider: true
         },
         {
+          id: 'set-start-node',
+          content: 'Mark as start node',
+          tooltipText: 'Mark as start node',
+          selector: 'node',
+          onClickFunction: event => cy.setStartNode(event.target),
+          hasTrailingDivider: true,
+          coreAsWell: false
+        },
+        {
           id: 'remove',
           content: 'Remove',
           tooltipText: 'remove',

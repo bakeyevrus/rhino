@@ -8,7 +8,8 @@ export const ELEMENT_ATTRIBUTES = {
   NAME: 'name',
   PRIORITY: 'priority',
   FROM: 'from',
-  TO: 'to'
+  TO: 'to',
+  START_NODE: 'startNode'
 };
 
 export const CUSTOM_ELEMENT_ATTRIBUTES = {

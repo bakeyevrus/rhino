@@ -11,6 +11,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GraphNodeData extends GraphElementData {
 
+    private boolean startNode;
+
     @JsonCreator
     public GraphNodeData(@JsonProperty("id") String id) {
         super(id);
