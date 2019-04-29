@@ -3,6 +3,8 @@ package cz.cvut.fel.bakeyevrus.rhino.handler;
 import cz.cvut.fel.bakeyevrus.rhino.dto.ProjectDto;
 import cz.cvut.fel.bakeyevrus.rhino.exception.UnauthorizedException;
 import cz.cvut.fel.bakeyevrus.rhino.service.ProjectService;
+import cz.cvut.fel.bakeyevrus.rhino.validation.RequestBodyValidator;
+import cz.cvut.fel.bakeyevrus.rhino.validation.RestAction;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -31,7 +33,7 @@ public class ProjectHandler {
     }
 
     public Mono<ServerResponse> getProjectById(ServerRequest request) {
-        String projectId = request.pathVariable("id");
+        String projectId = request.pathVariable("projectId");
         return projectService.getProjectById(projectId)
                 .flatMap(projectDto -> ServerResponse.ok().syncBody(projectDto))
                 .switchIfEmpty(ServerResponse.notFound().build())
@@ -40,7 +42,7 @@ public class ProjectHandler {
 
     public Mono<ServerResponse> createProject(ServerRequest request) {
         return request.bodyToMono(ProjectDto.class)
-                .doOnNext(projectDto -> validator.validate(projectDto, ProjectDto.Create.class))
+                .doOnNext(projectDto -> validator.validate(projectDto, RestAction.Create.class))
                 .flatMap(projectService::create)
                 .flatMap(projectDto -> ServerResponse.ok().syncBody(projectDto))
                 .transform(handleErrors);
@@ -48,7 +50,7 @@ public class ProjectHandler {
     }
 
     public Mono<ServerResponse> deleteProject(ServerRequest request) {
-        String projectId = request.pathVariable("id");
+        String projectId = request.pathVariable("projectId");
         return projectService.deleteById(projectId)
                 .filter(deletedProjects -> deletedProjects > 0)
                 .flatMap(deletedProjects -> ServerResponse.ok().build())
@@ -57,11 +59,10 @@ public class ProjectHandler {
     }
 
     public Mono<ServerResponse> updateProject(ServerRequest request) {
-        String projectId = request.pathVariable("id");
-
+        String projectId = request.pathVariable("projectId");
 
         return request.bodyToMono(ProjectDto.class)
-                .doOnNext(projectDto -> validator.validate(projectDto, ProjectDto.Update.class))
+                .doOnNext(projectDto -> validator.validate(projectDto, RestAction.Update.class))
                 .transform(matchIds(projectId))
                 .flatMap(projectService::update)
                 .flatMap(responseBody -> ServerResponse.ok().syncBody(responseBody))
@@ -69,7 +70,7 @@ public class ProjectHandler {
                 .transform(handleErrors);
     }
 
-    private Function<Mono<ServerResponse>, Mono<ServerResponse>> handleErrors =
+    private final Function<Mono<ServerResponse>, Mono<ServerResponse>> handleErrors =
             f -> f.onErrorResume(
                     ServerWebInputException.class,
                     err -> {
