@@ -7,6 +7,7 @@ import cz.cvut.fel.bakeyevrus.rhino.dto.UserRegisterRequestDto;
 import cz.cvut.fel.bakeyevrus.rhino.mapper.UserMapper;
 import cz.cvut.fel.bakeyevrus.rhino.service.UserService;
 import cz.cvut.fel.bakeyevrus.rhino.util.PasswordDecoder;
+import cz.cvut.fel.bakeyevrus.rhino.validation.RequestBodyValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;

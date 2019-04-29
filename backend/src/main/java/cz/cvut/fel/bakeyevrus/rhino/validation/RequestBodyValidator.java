@@ -1,4 +1,4 @@
-package cz.cvut.fel.bakeyevrus.rhino.handler;
+package cz.cvut.fel.bakeyevrus.rhino.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
