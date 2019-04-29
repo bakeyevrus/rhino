@@ -1,5 +1,6 @@
 import { graphActionTypes, modalTypes } from '../constants';
 import { graphService } from '../services';
+import { getActiveProjectId } from '../reducers';
 import { request, error } from './helpers';
 import modalActions from './modal.actions';
 
@@ -20,10 +21,10 @@ const graphActions = {
   saveGraphInBackground
 };
 
-function createGraph(newGraph) {
+function createGraph(newGraph, projectId) {
   return (dispatch) => {
     dispatch(request(CREATE_GRAPH));
-    return graphService.createGraph(newGraph).then(
+    return graphService.createGraph(newGraph, projectId).then(
       (graph) => {
         dispatch({
           type: CREATE_GRAPH,
@@ -31,28 +32,31 @@ function createGraph(newGraph) {
         });
         dispatch(modalActions.hideModal());
       },
-      errMessage => error(CREATE_GRAPH, { errMessage })
+      errMessage => dispatch(error(CREATE_GRAPH, { errMessage }))
     );
   };
 }
 
-function deleteGraph(id) {
-  return (dispatch) => {
+function deleteGraph(graphId) {
+  return (dispatch, getState) => {
+    const projectId = getActiveProjectId(getState());
     dispatch(request(DELETE_GRAPH));
-    return graphService.deleteGraph(id).then(
-      graphId => dispatch({
+    return graphService.deleteGraph(graphId, projectId).then(
+      id => dispatch({
         type: DELETE_GRAPH,
-        id: graphId
+        id
       }),
-      errMessage => error(DELETE_GRAPH, { errMessage })
+      errMessage => dispatch(error(DELETE_GRAPH, { errMessage }))
     );
   };
 }
 
 function updateGraph(updatedGraph) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    const projectId = getActiveProjectId(getState());
+
     dispatch(request(UPDATE_GRAPH));
-    return graphService.updateGraph(updatedGraph).then(
+    return graphService.updateGraph(updatedGraph, projectId).then(
       (graph) => {
         dispatch({
           type: UPDATE_GRAPH,
@@ -60,7 +64,7 @@ function updateGraph(updatedGraph) {
         });
         dispatch(modalActions.hideModal());
       },
-      errMessage => error(UPDATE_GRAPH, { errMessage })
+      errMessage => dispatch(error(UPDATE_GRAPH, { errMessage }))
     );
   };
 }
@@ -82,9 +86,10 @@ function saveGraph(graph) {
  * isLoading && graph.id === savedGraphId should be true
  */
 function saveGraphInBackground(graph) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    const projectId = getActiveProjectId(getState());
     dispatch(request(SAVE_GRAPH_IN_BACKGROUND));
-    return graphService.updateGraph(graph).then(
+    return graphService.updateGraph(graph, projectId).then(
       () => {
         dispatch({
           type: SAVE_GRAPH_IN_BACKGROUND,
