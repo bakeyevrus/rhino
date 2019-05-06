@@ -8,6 +8,7 @@ import cz.cvut.fel.bakeyevrus.rhino.model.GraphNode;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GraphMapper {
 
@@ -35,7 +36,6 @@ public class GraphMapper {
     }
 
 
-    // TODO: map also nodes and edges
     public static Graph fromDto(GraphDto dto) {
         var graph = Graph.of(dto.getName(), dto.getType());
 
@@ -47,6 +47,10 @@ public class GraphMapper {
 
         if (dto.getId() != null) {
             return graph.withId(dto.getId());
+        }
+
+        if (dto.getTestCases() != null) {
+            dto.getTestCases().stream().map(TestCaseMapper::fromDto).forEach(graph::addTestCase);
         }
 
         return graph;
@@ -64,11 +68,14 @@ public class GraphMapper {
             elementsDto.setNodes(nodes);
         }
 
+        var testCases = graph.getTestCases().stream().map(TestCaseMapper::toDto).collect(Collectors.toList());
+
         return new GraphDto(
                 graph.getId(),
                 graph.getName(),
                 graph.getType(),
-                elementsDto
+                elementsDto,
+                testCases
         );
     }
 }

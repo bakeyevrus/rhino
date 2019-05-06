@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -19,12 +20,21 @@ public class Graph {
     private GraphType type;
     private List<GraphNode> nodes;
     private List<GraphEdge> edges;
+    private List<TestCase> testCases;
 
     public static Graph of(String name, GraphType type) {
-        return new Graph(null, name, type, Collections.emptyList(), Collections.emptyList());
+        return new Graph(null, name, type, Collections.emptyList(), Collections.emptyList(), new LinkedList<>());
     }
 
     public Graph withId(String id) {
-        return new Graph(id, this.name, this.type, this.nodes, this.edges);
+        return new Graph(id, this.name, this.type, this.nodes, this.edges, this.testCases);
+    }
+
+    public boolean removeTestCase(String id) {
+        return testCases.removeIf(testCase -> testCase.getId().equals(id));
+    }
+
+    public void addTestCase(TestCase testCase) {
+        testCases.add(testCase);
     }
 }
