@@ -2,6 +2,7 @@ package cz.cvut.fel.bakeyevrus.rhino.router;
 
 import cz.cvut.fel.bakeyevrus.rhino.handler.GraphHandler;
 import cz.cvut.fel.bakeyevrus.rhino.handler.ProjectHandler;
+import cz.cvut.fel.bakeyevrus.rhino.handler.TestCaseHandler;
 import cz.cvut.fel.bakeyevrus.rhino.handler.UserHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +21,11 @@ public class MainRouter {
     private static String PROJECT_BY_ID = PROJECT + "/{projectId}";
     private static String GRAPH = PROJECT_BY_ID + "/graph";
     private static String GRAPH_BY_ID = GRAPH + "/{graphId}";
+    private static String TEST_CASE = GRAPH_BY_ID + "/test-case";
+    private static String TEST_CASE_BY_ID = TEST_CASE + "/{testCaseId}";
 
     @Bean
-    public RouterFunction<ServerResponse> route(UserHandler userHandler, ProjectHandler projectHandler, GraphHandler graphHandler) {
+    public RouterFunction<ServerResponse> route(UserHandler userHandler, ProjectHandler projectHandler, GraphHandler graphHandler, TestCaseHandler testCaseHandler) {
         return RouterFunctions.route()
                 .POST("/register", accept(APPLICATION_JSON), userHandler::register)
                 .POST("/login", accept(APPLICATION_JSON), userHandler::login)
@@ -34,6 +37,8 @@ public class MainRouter {
                 .POST(GRAPH, accept(APPLICATION_JSON), graphHandler::createGraph)
                 .PUT(GRAPH_BY_ID, accept(APPLICATION_JSON), graphHandler::updateGraph)
                 .DELETE(GRAPH_BY_ID, graphHandler::deleteGraph)
+                .POST(TEST_CASE, accept(APPLICATION_JSON), testCaseHandler::createTestCase)
+                .DELETE(TEST_CASE_BY_ID, testCaseHandler::deleteTestCase)
                 .build();
     }
 }

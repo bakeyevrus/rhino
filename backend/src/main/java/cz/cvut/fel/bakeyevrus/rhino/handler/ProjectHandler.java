@@ -43,7 +43,7 @@ public class ProjectHandler {
     public Mono<ServerResponse> createProject(ServerRequest request) {
         return request.bodyToMono(ProjectDto.class)
                 .doOnNext(projectDto -> validator.validate(projectDto, RestAction.Create.class))
-                .flatMap(projectService::create)
+                .flatMap(projectService::createProject)
                 .flatMap(projectDto -> ServerResponse.ok().syncBody(projectDto))
                 .transform(handleErrors);
 
@@ -51,7 +51,7 @@ public class ProjectHandler {
 
     public Mono<ServerResponse> deleteProject(ServerRequest request) {
         String projectId = request.pathVariable("projectId");
-        return projectService.deleteById(projectId)
+        return projectService.deleteProjectById(projectId)
                 .filter(deletedProjects -> deletedProjects > 0)
                 .flatMap(deletedProjects -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build())
@@ -64,7 +64,7 @@ public class ProjectHandler {
         return request.bodyToMono(ProjectDto.class)
                 .doOnNext(projectDto -> validator.validate(projectDto, RestAction.Update.class))
                 .transform(matchIds(projectId))
-                .flatMap(projectService::update)
+                .flatMap(projectService::updateProject)
                 .flatMap(responseBody -> ServerResponse.ok().syncBody(responseBody))
                 .switchIfEmpty(ServerResponse.notFound().build())
                 .transform(handleErrors);
