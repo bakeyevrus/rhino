@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class TestCase {
 
     public void addPath(List<String> path) {
         List<String> copiedList = new LinkedList<>(path);
+        Collections.reverse(copiedList);
         paths.add(copiedList);
     }
 }
