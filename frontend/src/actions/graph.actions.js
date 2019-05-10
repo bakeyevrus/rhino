@@ -9,6 +9,7 @@ const {
   UPDATE_GRAPH,
   SELECT_GRAPH,
   DELETE_GRAPH,
+  SAVE_GRAPH,
   SAVE_GRAPH_IN_BACKGROUND
 } = graphActionTypes;
 
@@ -25,10 +26,10 @@ function createGraph(newGraph, projectId) {
   return (dispatch) => {
     dispatch(request(CREATE_GRAPH));
     return graphService.createGraph(newGraph, projectId).then(
-      (graph) => {
+      (response) => {
         dispatch({
           type: CREATE_GRAPH,
-          graph
+          response
         });
         dispatch(modalActions.hideModal());
       },
@@ -57,10 +58,10 @@ function updateGraph(updatedGraph) {
 
     dispatch(request(UPDATE_GRAPH));
     return graphService.updateGraph(updatedGraph, projectId).then(
-      (graph) => {
+      (response) => {
         dispatch({
           type: UPDATE_GRAPH,
-          graph
+          response
         });
         dispatch(modalActions.hideModal());
       },
@@ -69,11 +70,16 @@ function updateGraph(updatedGraph) {
   };
 }
 
+/**
+ * Saves graph both in the state and on backend, dispatching two actions simultaneously.
+ * This is the main difference from updateGraph() action.
+ * @param {*} graph - graph to save
+ */
 function saveGraph(graph) {
   return (dispatch) => {
     // Save graph in state
     dispatch({
-      type: UPDATE_GRAPH,
+      type: SAVE_GRAPH,
       graph
     });
     // Push graph to backend

@@ -1,25 +1,25 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import { getActiveGraph } from '../reducers';
 import { graphActions } from '../actions';
-import makeCytoscape from './cytoscape';
+import { useCytoscape } from '../hooks';
 import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
 import SelectGraphBanner from './SelectGraphBanner';
 
 Editor.propTypes = {
+  onGraphSaveInBackground: PropTypes.func.isRequired,
+  onGraphSelect: PropTypes.func.isRequired,
+  onGraphSave: PropTypes.func.isRequired,
   graph: PropTypes.shape({
     id: PropTypes.string,
     elements: PropTypes.shape({
       nodes: PropTypes.array,
       edges: PropTypes.array
     })
-  }),
-  onGraphSaveInBackground: PropTypes.func.isRequired,
-  onGraphSelect: PropTypes.func.isRequired,
-  onGraphSave: PropTypes.func.isRequired
+  })
 };
 
 Editor.defaultProps = {
@@ -37,7 +37,12 @@ function Editor({
   const { id, elements } = graph;
   const { cyContainerRef, selectedElement, editor } = useCytoscape(elements);
   const {
-    setElementAttribute, removeElementAttribute, validateName, getAllElements
+    setElementAttribute,
+    removeElementAttribute,
+    validateName,
+    getAllElements,
+    getElementNameById,
+    selectByIds
   } = editor;
   useBackgroundSave(id, saveGraph, SAVE_DELAY);
 
@@ -64,6 +69,8 @@ function Editor({
             <Col lg={3}>
               <RightPanel
                 selectedElement={selectedElement}
+                getElementNameById={getElementNameById}
+                highlightPath={selectByIds}
                 validateName={validateName}
                 setElementAttribute={setElementAttribute}
                 removeElementAttribute={removeElementAttribute}
@@ -93,89 +100,6 @@ function Editor({
     }
     onGraphSelect(targetId);
   }
-}
-
-function useCytoscape(elements) {
-  const cyContainerRef = useRef();
-  const cyEditorRef = useRef();
-  const [selectedElement, selectElement] = useState(null);
-
-  // Will re-create cytoscape instance on every 'element' change
-  useEffect(() => {
-    if (elements != null) {
-      console.log('Creating instance');
-      const editor = initializeEditor(cyContainerRef.current, elements, selectElement);
-      cyEditorRef.current = editor;
-      return () => {
-        selectElement(null);
-        editor.getNativeInstance().removeListener('click');
-        editor.destroy();
-      };
-    }
-    // Return nothing since we don't initialize anything
-    return () => ({});
-  }, [elements]);
-
-  function setElementAttribute(key, value) {
-    const { id } = selectedElement;
-    const updatedElement = cyEditorRef.current.updateElementData(id, key, value);
-
-    /* Passing new object with spread attributes is essential, otherwise React
-       won't re-render, since cyEditor returns the same instance after update */
-    selectElement({ ...updatedElement });
-  }
-
-  function removeElementAttribute(attrName) {
-    const { id } = selectedElement;
-    const elementAttributes = cyEditorRef.current.removeAttribute(id, attrName);
-
-    /* Passing new object with spread attributes is essential, otherwise React
-       won't re-render, since cyEditor returns the same instance after update */
-    selectElement({ ...elementAttributes });
-  }
-
-  function validateName(name) {
-    if (name == null || name.length === 0) {
-      return 'Name cannot be empty';
-    }
-
-    if (!cyEditorRef.current.isNameValid(name)) {
-      return 'Entered name already exists';
-    }
-
-    return null;
-  }
-
-  function getAllElements() {
-    return cyEditorRef.current.getAllElements();
-  }
-
-  return {
-    cyContainerRef,
-    selectedElement,
-    editor: {
-      setElementAttribute,
-      removeElementAttribute,
-      validateName,
-      getAllElements
-    }
-  };
-}
-
-function initializeEditor(container, elements, onElementSelect) {
-  const editor = makeCytoscape(container, elements);
-
-  editor.getNativeInstance().on('click', (event) => {
-    const element = event.target;
-    if (editor.isElement(element)) {
-      onElementSelect(element.data());
-    } else {
-      // Reset selected element
-      onElementSelect(null);
-    }
-  });
-
-  return editor;
 }
 
 /* Saves graph after user inactivity

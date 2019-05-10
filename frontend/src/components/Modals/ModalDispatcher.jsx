@@ -8,12 +8,14 @@ import Alert from './AlertModal';
 import Notification from './NotificationModal';
 import Project from './ProjectModal';
 import Graph from './GraphModal';
+import TestCase from './TestCaseModal';
 
 const MODAL_TYPES = {
   [modalTypes.ALERT]: Alert,
   [modalTypes.PROJECT]: Project,
   [modalTypes.GRAPH]: Graph,
-  [modalTypes.NOTIFICATION]: Notification
+  [modalTypes.NOTIFICATION]: Notification,
+  [modalTypes.TEST_CASE]: TestCase
 };
 
 function ModalDispatcher({ modalType, modalProps, close }) {

@@ -7,5 +7,6 @@ export const modalTypes = {
   ALERT: 'ALERT',
   NOTIFICATION: 'NOTIFICATION',
   PROJECT: 'PROJECT',
-  GRAPH: 'GRAPH'
+  GRAPH: 'GRAPH',
+  TEST_CASE: 'TEST_CASE'
 };

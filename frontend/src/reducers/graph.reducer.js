@@ -1,18 +1,19 @@
 import { combineReducers } from 'redux';
-import { graphActionTypes, projectActionTypes } from '../constants';
+import { graphActionTypes, projectActionTypes, testCaseActionTypes } from '../constants';
 import createLoaderReducer from './loader.reducer';
 import createErrorMessageReducer from './error.reducer';
 
 const {
-  CREATE_GRAPH, UPDATE_GRAPH, SELECT_GRAPH, DELETE_GRAPH
+  CREATE_GRAPH, UPDATE_GRAPH, SELECT_GRAPH, DELETE_GRAPH, SAVE_GRAPH
 } = graphActionTypes;
 const { FETCH_PROJECT } = projectActionTypes;
+const { GENERATE_TEST_CASE, DELETE_TEST_CASE } = testCaseActionTypes;
 
 function byId(state = {}, action) {
   switch (action.type) {
     case FETCH_PROJECT:
       return {
-        ...action.project.graphs
+        ...action.response.entities.graphs
       };
     case CREATE_GRAPH:
     case UPDATE_GRAPH:
@@ -28,12 +29,55 @@ function byId(state = {}, action) {
       */
       return {
         ...state,
+        ...action.response.entities.graphs
+      };
+    case SAVE_GRAPH:
+      return {
+        ...state,
         [action.graph.id]: action.graph
       };
     case DELETE_GRAPH: {
       const newState = { ...state };
       delete newState[action.id];
       return newState;
+    }
+    case GENERATE_TEST_CASE: {
+      const { graphId, response } = action;
+      /**
+        * Important note:
+        * If we start deep copying of properties like in the snippet bellow,
+        * then we start getting re-creating new instance of Editor.jsx on every state
+        * update, since elements will start pointing on new object every time
+          [action.graph.id]: {
+          ...action.graph,
+          elements: { ...action.graph.elements }
+        }
+      */
+      const graph = state[graphId];
+      graph.testCases = graph.testCases.concat(response.result);
+      return {
+        ...state,
+        [graphId]: graph
+      };
+    }
+    case DELETE_TEST_CASE: {
+      const { id: testCaseId, graphId } = action;
+      /**
+        * Important note:
+        * If we start deep copying of properties like in the snippet bellow,
+        * then we start getting re-creating new instance of Editor.jsx on every state
+        * update, since elements will start pointing on new object every time
+          [action.graph.id]: {
+          ...action.graph,
+          elements: { ...action.graph.elements }
+        }
+      */
+      const graph = state[graphId];
+      graph.testCases = graph.testCases.filter(id => id !== testCaseId);
+      return {
+        ...state,
+        [graphId]: graph
+      };
     }
     default:
       return state;
@@ -46,7 +90,7 @@ function activeGraphId(state = initGraphId, action) {
     case SELECT_GRAPH:
       return action.id;
     case UPDATE_GRAPH:
-      return action.graph.id;
+      return action.response.result;
     case DELETE_GRAPH:
       return state === action.id ? null : state;
     default:

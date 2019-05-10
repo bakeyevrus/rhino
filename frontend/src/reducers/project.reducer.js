@@ -18,6 +18,10 @@ function byId(state = {}, action) {
         ...action.projects
       };
     case FETCH_PROJECT:
+      return {
+        ...state,
+        ...action.response.entities.projects
+      };
     case CREATE_PROJECT:
     case UPDATE_PROJECT:
       return {
@@ -38,6 +42,7 @@ const initProjectId = localStorage.getItem('activeProjectId');
 function activeProjectId(state = initProjectId, action) {
   switch (action.type) {
     case FETCH_PROJECT:
+      return action.response.result;
     case CREATE_PROJECT:
       return action.project.id;
     case DELETE_PROJECT:

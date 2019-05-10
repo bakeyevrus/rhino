@@ -23,6 +23,18 @@ function getDefaultErrorMessage(responseStatus) {
   }
 }
 
+/**
+ * Validates if provided id not null, otherwise throws error
+ * @param {*} id - id to validate
+ * @param {string} entityName - entity, which provided id part of.
+ * Used in error message for debugging
+ */
+export function validateIdNotNull(id, entityName = 'Provided') {
+  if (id == null) {
+    throw new Error(`${entityName} id is null`);
+  }
+}
+
 export function logDifferentResponseStatus(response, statusExpected) {
   const { url } = response.request;
   console.warn(`${url} responded with ${response.status}, but HTTP ${statusExpected} was expected`);
