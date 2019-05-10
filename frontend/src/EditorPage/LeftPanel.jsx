@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {
   Card, CardHeader, CardBody, CardTitle, Button
 } from 'reactstrap';
-import { modalActions, graphActions } from '../actions';
+import { modalActions } from '../actions';
 import { modalTypes } from '../constants';
 import {
   getActiveProject,
@@ -19,12 +19,9 @@ import './leftPanel.css';
 LeftPanel.propTypes = {
   activeProjectName: PropTypes.string.isRequired,
   selectGraph: PropTypes.func.isRequired,
-  deleteGraph: PropTypes.func.isRequired,
   saveGraph: PropTypes.func.isRequired,
   openCreateGraphModal: PropTypes.func.isRequired,
-  openUpdateGraphModal: PropTypes.func.isRequired,
   activeGraphId: PropTypes.string,
-  isGraphSaving: PropTypes.bool,
   graphs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -35,7 +32,6 @@ LeftPanel.propTypes = {
 
 LeftPanel.defaultProps = {
   activeGraphId: null,
-  isGraphSaving: false,
   graphs: []
 };
 
@@ -43,12 +39,9 @@ function LeftPanel({
   activeProjectName,
   activeGraphId,
   graphs,
-  isGraphSaving,
   selectGraph,
   saveGraph,
-  deleteGraph,
-  openCreateGraphModal,
-  openUpdateGraphModal
+  openCreateGraphModal
 }) {
   return (
     <>
@@ -77,19 +70,13 @@ function LeftPanel({
 
     return graphs.map((graph) => {
       const isActive = graph.id === activeGraphId;
-      const GraphTabItem = isActive ? ActiveGraphTab : GraphTab;
-      const graphTabProps = {
-        key: graph.id,
-        id: graph.id,
-        name: graph.name,
-        onSelectClick: isActive ? undefined : selectGraph,
-        onSaveClick: isActive ? saveGraph : undefined,
-        onEditClick: isActive ? openUpdateGraphModal : undefined,
-        onDeleteClick: isActive ? deleteGraph : undefined,
-        isGraphSaving
-      };
+      if (isActive) {
+        return <ActiveGraphTab key={graph.id} saveGraph={saveGraph} />;
+      }
 
-      return <GraphTabItem {...graphTabProps} />;
+      return (
+        <GraphTab key={graph.id} id={graph.id} name={graph.name} onSelectClick={selectGraph} />
+      );
     });
   }
 }
@@ -106,34 +93,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    openCreateGraphModal: () => dispatch(
-      modalActions.showModal({
-        modalType: modalTypes.GRAPH
-      })
-    ),
-    openUpdateGraphModal: graphId => dispatch(
-      modalActions.showModal({
-        modalType: modalTypes.GRAPH,
-        modalProps: {
-          // Specify key, because GraphModal is copying props to state
-          key: graphId,
-          graphId
-        }
-      })
-    ),
-    deleteGraph: (id, name) => dispatch(modalActions.showModal(graphDeleteModal(id, name)))
+    openCreateGraphModal: () => dispatch(modalActions.showModal({ modalType: modalTypes.GRAPH }))
   };
-
-  function graphDeleteModal(id, name) {
-    const modalType = modalTypes.ALERT;
-    const modalProps = {
-      title: 'Warning!',
-      message: `Are you sure to delete graph ${name}?`,
-      onSubmitClick: () => dispatch(graphActions.deleteGraph(id))
-    };
-
-    return { modalType, modalProps };
-  }
 }
 
 export default connect(

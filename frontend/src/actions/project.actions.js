@@ -38,9 +38,9 @@ function fetchProject(projectId) {
     dispatch(request(FETCH_PROJECT));
 
     return projectService.getById(projectId).then(
-      project => dispatch({
+      response => dispatch({
         type: FETCH_PROJECT,
-        project
+        response
       }),
       errMessage => dispatch(error(FETCH_PROJECT, { errMessage }))
     );

@@ -44,7 +44,7 @@ function SelectedElementCard({
     selectedElement
   );
   return (
-    <Card>
+    <Card className="mb-2">
       <CardHeader>Selected element</CardHeader>
       <CardBody>
         <FormWithValidation

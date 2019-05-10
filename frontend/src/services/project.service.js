@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { normalize } from 'normalizr';
+import { projectSchema } from './schemas';
 import { handleErrorResponse, logDifferentResponseStatus, getAuthHeader } from './helper';
 
 const projectService = {
@@ -26,9 +28,7 @@ function getById(projectId) {
 
   return axios.get(`/api/v1/project/${projectId}`, { headers: getAuthHeader() }).then((response) => {
     if (response.status === 200) {
-      const project = response.data;
-      const graphs = normalizeResponse(project.graphs);
-      return { ...project, graphs };
+      return normalize(response.data, projectSchema);
     }
 
     logDifferentResponseStatus(response, 200);

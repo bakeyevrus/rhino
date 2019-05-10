@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { normalize } from 'normalizr';
+import { graphSchema } from './schemas';
 import { getAuthHeader, logDifferentResponseStatus, handleErrorResponse } from './helper';
 
 const graphService = {
@@ -18,8 +20,7 @@ function createGraph(graph, projectId) {
 
   function handleSuccessResponse(response) {
     if (response.status === 200) {
-      const createdGraph = response.data;
-      return createdGraph;
+      return normalize(response.data, graphSchema);
     }
 
     logDifferentResponseStatus(response, 200);
@@ -51,16 +52,16 @@ function updateGraph(graph, projectId) {
   validateGraphNotNull(graph);
   validateIdNotNull(id);
   validateIdNotNull(projectId);
-  console.log(graph);
+  // TODO: decide if we can update test cases using this endpoint
+  const requestBody = { ...graph, testCases: null };
 
   return axios
-    .put(`${getRootUrl(projectId)}/${id}`, graph, { headers: getAuthHeader() })
+    .put(`${getRootUrl(projectId)}/${id}`, requestBody, { headers: getAuthHeader() })
     .then(handleSuccessResponse, handleErrorResponse);
 
   function handleSuccessResponse(response) {
     if (response.status === 200) {
-      const updatedGraph = response.data;
-      return updatedGraph;
+      return normalize(response.data, graphSchema);
     }
 
     logDifferentResponseStatus(response, 200);

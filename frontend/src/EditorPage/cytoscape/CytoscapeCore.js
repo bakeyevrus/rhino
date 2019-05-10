@@ -132,7 +132,7 @@ class CytoscapeCore {
   }
 
   /**
-   * Get an element data from its ID
+   * Retrieves element's data from its ID
    * @param {string} id
    */
   getElementDataById(id) {
@@ -232,6 +232,17 @@ class CytoscapeCore {
 
   selectAll() {
     this.select('*');
+  }
+
+  /**
+   * Selects elements based on provided ids
+   *
+   * @param {Array} ids - array of the ids to select
+   */
+  selectByIds(ids) {
+    const selectorQuery = ids.map(id => `#${id}`).join(',');
+    this.cy.elements().unselect();
+    this.cy.elements(selectorQuery).select();
   }
 
   setPlugins(plugins) {

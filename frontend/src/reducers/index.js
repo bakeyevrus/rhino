@@ -4,13 +4,15 @@ import auth, * as fromAuth from './auth.reducer';
 import projects, * as fromProjects from './project.reducer';
 import graphs, * as fromGraphs from './graph.reducer';
 import editor, * as fromEditor from './editor.reducer';
+import testCases, * as fromTestCases from './test-case.reducer';
 
 export default combineReducers({
   projects,
   graphs,
   auth,
   modal,
-  editor
+  editor,
+  testCases
 });
 
 // Auth
@@ -31,6 +33,18 @@ export const isProjectLoading = state => fromProjects.isLoading(state.projects);
 export const getActiveProjectId = state => fromProjects.getActiveProjectId(state.projects);
 export const getProjectById = (state, id) => fromProjects.getProjectById(state.projects, id);
 export const getProjectErrorMessage = state => fromProjects.getErrorMessage(state.projects);
+
+// Test cases
+export const isTestCaseLoading = state => fromTestCases.isTestCaseLoading(state.testCases);
+export const getTestCaseErrorMessage = state => fromTestCases.getErrorMessage(state.testCases);
+export const getTestCaseById = (state, id) => fromTestCases.getTestCaseById(state.testCases, id);
+export const getTestCaseList = (state) => {
+  const { testCases: activeTestCases } = getActiveGraph(state);
+  return activeTestCases
+    .map(testCaseId => getTestCaseById(state, testCaseId))
+    .map(({ id, name }) => ({ id, name }));
+};
+export const getSelectedTestCase = state => fromTestCases.getSelectedTestCase(state.testCases);
 
 // Editor
 export const getLastSavedTimestamp = state => fromEditor.getLastSavedTimestamp(state.editor);
