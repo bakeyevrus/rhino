@@ -11,7 +11,7 @@
     "cytoscape-edgehandles": "^3.5.1",
     "cytoscape-grid-guide": "^2.2.1",
     "cytoscape-panzoom": "^2.5.3",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isempty": "^4.4.0",
     "lodash.map": "^4.6.0",
